@@ -3,32 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="homepage-style.css">
-    <title>Spark Finance - Home</title>
+    <title>Spark Finance - Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <header class="header">
+    <header>
         <h1>Welcome to Spark Finance</h1>
-        <nav class="nav-bar">
-            <ul>
-                <li><a href="homepage.html">Home</a></li>
-                <li><a href="login.html">Login</a></li>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Contact</a></li>
-            </ul>
-        </nav>
+        <button id="logoutButton">Logout</button>
     </header>
-    <main class="main-content">
-        <section class="intro">
-            <h2>Empowering Students to Manage Finances</h2>
-            <p>
-                Spark Finance provides the tools and resources for students to easily track and manage their financial activities securely.
-            </p>
-            <button class="cta-button"><a href="login.html">Get Started</a></button>
-        </section>
-    </main>
-    <footer class="footer">
-        <p>&copy; 2024 Spark Finance. All Rights Reserved.</p>
-    </footer>
+
+    <section class="dashboard">
+        <div class="credit-score-container">
+            <h2>Your Credit Score</h2>
+            <div class="credit-score">720</div>
+            <p>Based on recent financial activity</p>
+        </div>
+
+        <!-- Budget Tracker Section -->
+        <div class="budget-tracker-container">
+            <h2>Budget Tracker</h2>
+            <input type="number" id="income" placeholder="Enter your monthly income" />
+            <input type="number" id="expenses" placeholder="Enter your monthly expenses" />
+            <button id="trackBudgetButton">Track Budget</button>
+            <div id="budgetResult"></div>
+        </div>
+
+        <!-- Financial Goals Chart Section -->
+        <div class="financial-goals-container">
+            <h2>Your Financial Goals</h2>
+            <canvas id="financialGoalsChart" width="400" height="400"></canvas>
+        </div>
+    </section>
+
+    <script type="module">
+        import { auth } from './firebase-config.js';
+        import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+        // Redirect to login if not logged in
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = "login.html";
+            }
+        });
+
+        // Logout functionality
+        document.getElementById("logoutButton").addEventListener("click", () => {
+            signOut(auth).then(() => {
+                window.location.href = "login.html";
+            }).catch((error) => {
+                console.error("Logout error:", error);
+                alert("Error logging out: " + error.message);
+            });
+        });
+
+        // Budget Tracker Logic
+        document.getElementById("trackBudgetButton").addEventListener("click", () => {
+            const income = parseFloat(document.getElementById("income").value);
+            const expenses = parseFloat(document.getElementById("expenses").value);
+            if (isNaN(income) || isNaN(expenses)) {
+                alert("Please enter valid numbers for income and expenses.");
+                return;
+            }
+
+            const remainingBudget = income - expenses;
+            const budgetResult = document.getElementById("budgetResult");
+            budgetResult.innerHTML = `
+                <p>Your remaining budget: $${remainingBudget.toFixed(2)}</p>
+                <p>${remainingBudget < 0 ? "You're over budget!" : "You're within your budget."}</p>
+            `;
+        });
+
+        // Financial Goals Chart
+        const ctx = document.getElementById('financialGoalsChart').getContext('2d');
+        const financialGoalsChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Savings', 'Expenses', 'Investments', 'Other'],
+                datasets: [{
+                    label: 'Financial Goals',
+                    data: [5000, 2000, 1000, 500],
+                    backgroundColor: ['#339fd6', '#f1c40f', '#e67e22', '#4caf50'],
+                    borderColor: ['#ffffff', '#ffffff', '#ffffff', '#ffffff'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return tooltipItem.label + ': $' + tooltipItem.raw;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>

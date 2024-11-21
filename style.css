@@ -1,11 +1,9 @@
-
+/* General Reset and Setup */
 * {
-
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: "Poppins", sans-serif;
-
 }
 
 body {
@@ -16,113 +14,170 @@ body {
     background: url('growth-economy-with-coins-concept.jpg') no-repeat;
     background-size: cover;
     background-position: center;
+    overflow: hidden;
 }
-
-.wrapper{
+/* Wrapper styles */
+.wrapper {
     width: 420px;
-    background: lightgrey;
-    border: 2px solid rgba(255, 255, 255, .2);
-    backdrop-filter: blur(20px);
-    box-shadow: 0 0 10px rgba(0, 0, 0,.2);
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(255, 255, 255, .3);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
     color: white;
-    border-radius: 10px;
-    padding: 30px 40px;
+    border-radius: 15px;
+    padding: 40px 50px;
+    position: relative;
+    transform: scale(1);
+    animation: scaleIn 0.6s ease-in-out forwards;
 }
 
-.wrapper h1{
+/* Keyframe animation for scaling effect on wrapper */
+@keyframes scaleIn {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.wrapper h1 {
     font-size: 36px;
     text-align: center;
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: #0ba1ca;
+    text-transform: uppercase;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.6);
 }
 
-.wrapper .input-box {
+/* Input box styles */
+.input-box {
     width: 100%;
     height: 50px;
     margin: 30px 0;
+    position: relative;
 }
-
 
 .input-box input {
     width: 100%;
     height: 100%;
     background: transparent;
-    border: none;
+    border: 2px solid rgba(255, 255, 255, 0.3);
     outline: none;
-    border: 2px solid rgba(255, 255, 255, .2);
-    border-radius: 40px;
+    border-radius: 50px;
     color: white;
     padding: 20px 45px 20px 20px;
+    font-size: 16px;
+    transition: all 0.4s ease;
 }
-
 
 .input-box input::placeholder {
     color: white;
-
+    font-size: 18px;
+    transition: color 0.3s ease;
 }
 
+/* Electric blue on focus for input */
+.input-box input:focus {
+    border-color: #00bfff;
+    background: rgba(0, 191, 255, 0.2);
+    box-shadow: 0 0 10px rgba(0, 191, 255, 0.6);
+}
+
+.input-box input:focus::placeholder {
+    color: #00bfff;
+}
+
+/* Icon inside input box */
 .input-box i {
     position: absolute;
     right: 20px;
     top: 50%;
-    transform: translate(-50%);
-    font-size: 20px;
-
+    transform: translateY(-50%);
+    font-size: 22px;
+    color: #fff;
+    transition: transform 0.3s ease;
 }
 
-.wrapper .remember-forgot {
+/* When input is focused, icon moves */
+.input-box input:focus + i {
+    transform: translateY(-50%) rotate(360deg);
+}
+
+/* Remember and Forgot Section */
+.remember-forgot {
     display: flex;
     justify-content: space-between;
     font-size: 14.5px;
     margin: -15px 0 15px;
 }
 
-.remember-forgot label input { 
-    accent-color:#fff;
-    margin-right: 3px
+.remember-forgot label input {
+    accent-color: #00bfff;
+    margin-right: 5px;
 }
-
 
 .remember-forgot a {
     color: #fff;
     text-decoration: none;
-
+    transition: color 0.3s ease;
 }
 
 .remember-forgot a:hover {
+    color: #00bfff;
     text-decoration: underline;
 }
 
+/* Button Styling */
 .wrapper .btn {
     width: 100%;
-    height: 45px;
-    background: #fff;
+    height: 50px;
+    background: linear-gradient(135deg, #032341, #0791b0);
     border: none;
     outline: none;
-    border-radius: 40px;
-    box-shadow: 0 0 10px rgba(0, 0,0,.1) ;
+    border-radius: 50px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
     cursor: pointer;
-    font-size: #333;
-    font-weight: 600;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    transition: transform 0.3s ease, background 0.3s ease;
 }
 
+/* Hover effect for the button */
+.wrapper .btn:hover {
+    background: linear-gradient(135deg, #22d2e6, #806bb5);
+    transform: translateY(-5px);
+}
+
+/* Click effect on button */
+.wrapper .btn:active {
+    transform: scale(0.95);
+}
+
+/* Register link styles */
 .wrapper .register-link {
-   font-size: 14.5px;
-   text-align: center;
-   margin-top: 20px;
+    font-size: 14.5px;
+    text-align: center;
+    margin-top: 20px;
 }
 
 .register-link p a {
     color: white;
     text-decoration: none;
     font-weight: 600;
+    transition: color 0.3s ease;
 }
 
 .register-link p a:hover {
+    color: #339fd6;
     text-decoration: underline;
-
-
-
 }
 
+/* Container styles */
 .container {
     display: flex;
     flex-direction: column;
@@ -130,19 +185,53 @@ body {
     width: 100%;
 }
 
+/* Title Styling */
 .title {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
     font-size: 56px;
     font-weight: bold;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    animation: glowEffect 2s infinite alternate;
 }
 
+/* Keyframe animation for glowing text */
+@keyframes glowEffect {
+    0% {
+        text-shadow: 0 0 10px #00bfff, 0 0 20px #00bfff, 0 0 30px #00bfff;
+    }
+    50% {
+        text-shadow: 0 0 15px #00bfff, 0 0 30px #00bfff, 0 0 45px #00bfff;
+    }
+    100% {
+        text-shadow: 0 0 10px #00bfff, 0 0 20px #00bfff, 0 0 30px #00bfff;
+    }
+}
+
+/* Title link styles */
 .title a {
     text-decoration: none;
-    color: #ffffff; /* Change this color as needed */
-    font-family: "Poppins", sans-serif;
+    color: #ffffff;
+    font-family: "bebas-nueue", sans-serif;
+    font-weight: bold;
+    letter-spacing: 2px;
 }
 
 .title a:hover {
-    color: darkgray; /* Hover color for better user interaction */
+    color: #6c7375;
 }
+
+/* Adding background animation */
+body::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+}
+

@@ -1,0 +1,155 @@
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+/* Body Styles */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: url('growth-economy-with-coins-concept.jpg') no-repeat;
+    background-size: cover;
+    background-position: center;
+    flex-direction: column;
+    position: relative;
+}
+
+/* Header Styles */
+header {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: calc(100% - 60px);
+}
+
+header h1 {
+    font-size: 32px;
+    font-weight: bold;
+    color: white;
+}
+
+/* Logout Button */
+#logoutButton {
+    padding: 10px 20px;
+    background-color: #e94560;
+    border: none;
+    color: white;
+    font-size: 16px;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;
+}
+
+#logoutButton:hover {
+    background-color: #ff4f5f;
+}
+
+/* Dashboard Container */
+.dashboard {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* Credit Score Card */
+.credit-score-container {
+    width: 420px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, .2);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    color: white;
+    border-radius: 10px;
+    padding: 40px;
+    text-align: center;
+}
+
+.credit-score-container h2 {
+    font-size: 36px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.credit-score {
+    font-size: 3em;
+    font-weight: bold;
+    color: #4caf50;
+    margin-bottom: 15px;
+}
+
+.credit-score-container p {
+    font-size: 16px;
+    color: #ddd;
+}
+
+/* Budget Tracker */
+.budget-tracker-container {
+    width: 420px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, .2);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    color: white;
+    border-radius: 10px;
+    padding: 40px;
+    margin-top: 30px;
+    text-align: center;
+}
+
+.budget-tracker-container input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    background: transparent;
+    font-size: 16px;
+}
+
+.budget-tracker-container input::placeholder {
+    color: #ddd;
+}
+
+.budget-tracker-container button {
+    padding: 10px 20px;
+    background-color: #f1c40f;
+    border: none;
+    color: white;
+    font-size: 16px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.budget-tracker-container button:hover {
+    background-color: #e67e22;
+}
+
+/* Financial Goals Section */
+.financial-goals-container {
+    width: 420px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, .2);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    color: white;
+    border-radius: 10px;
+    padding: 40px;
+    margin-top: 30px;
+    text-align: center;
+}
+
+/*
