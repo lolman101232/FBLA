@@ -1,0 +1,134 @@
+// Import Firebase modules
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, getDocs, addDoc, doc, setDoc } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL, listAll } from "firebase/storage";
+
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID",
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+async function listFiles() {
+  try {
+    const storageRef = ref(storage);
+    const fileList = await listAll(storageRef);
+    return fileList.items.map((itemRef) => itemRef.name);
+  } catch (error) {
+    console.error("Error listing files:", error);
+    return [];
+  }
+}
+
+async function readFile(fileName) {
+  try {
+    const fileRef = ref(storage, fileName);
+    const fileURL = await getDownloadURL(fileRef);
+    console.log("\n--- File Contents ---");
+    console.log(`File URL: ${fileURL}`);
+    // Fetch the file content if required
+  } catch (error) {
+    console.error("Error reading file:", error);
+  }
+}
+
+async function createFile(fileName, content) {
+  try {
+    const fileRef = ref(storage, fileName);
+    const blob = new Blob([content], { type: "text/plain" });
+    await uploadBytes(fileRef, blob);
+    console.log(`File '${fileName}' created successfully.`);
+  } catch (error) {
+    console.error("Error creating file:", error);
+  }
+}
+
+async function editFile(fileName, contentToAppend) {
+  try {
+    const fileRef = ref(storage, fileName);
+    const fileURL = await getDownloadURL(fileRef);
+
+    const response = await fetch(fileURL);
+    const existingContent = await response.text();
+    const newContent = existingContent + "\n" + contentToAppend;
+
+    const blob = new Blob([newContent], { type: "text/plain" });
+    await uploadBytes(fileRef, blob);
+    console.log("Text appended successfully.");
+  } catch (error) {
+    console.error("Error editing file:", error);
+  }
+}
+
+function displayMenu() {
+  console.log("\nFile Manager");
+  console.log("1. Open and read a file");
+  console.log("2. Edit a file (append text)");
+  console.log("3. Create a new file");
+  console.log("4. Display file names");
+  console.log("5. Exit");
+  return prompt("Choose an option (1-5): ");
+}
+
+async function main() {
+  while (true) {
+    const choice = displayMenu();
+
+    if (choice === "1") {
+      const files = await listFiles();
+      if (files.length > 0) {
+        console.log("\nThe names of the current files are as follow:");
+        files.forEach((file, index) => console.log(`${index + 1}. ${file}`));
+      } else {
+        console.log("No current files");
+      }
+      const fileName = prompt("Enter the file name to read: ");
+      await readFile(fileName);
+
+    } else if (choice === "2") {
+      const files = await listFiles();
+      if (files.length > 0) {
+        console.log("\nThe names of the current files are as follow:");
+        files.forEach((file, index) => console.log(`${index + 1}. ${file}`));
+      } else {
+        console.log("No current files");
+      }
+      const fileName = prompt("Enter the file name to edit: ");
+      const textToAppend = prompt("Enter text to append: ");
+      await editFile(fileName, textToAppend);
+
+    } else if (choice === "3") {
+      const fileName = prompt("Enter the new file name: ");
+      const content = prompt("Enter content for the new file: ");
+      await createFile(fileName, content);
+
+    } else if (choice === "4") {
+      const files = await listFiles();
+      if (files.length > 0) {
+        console.log("\nThe names of the current files are as follow:");
+        files.forEach((file, index) => console.log(`${index + 1}. ${file}`));
+      } else {
+        console.log("No current files");
+      }
+
+    } else if (choice === "5") {
+      console.log("Exiting program. Goodbye!");
+      break;
+
+    } else {
+      console.log("Invalid choice. Please select a valid option.");
+    }
+  }
+}
+
+// Run the program
+main();
