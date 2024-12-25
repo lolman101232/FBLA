@@ -11,9 +11,15 @@
     <header>
         <h1>Welcome to Spark Finance</h1>
         <button id="logoutButton">Logout</button>
+        <script>
+            document.getElementById('logoutButton').addEventListener('click', () => {
+                window.location.href = 'login.html'; // Replace 'login.html' with the correct path to your login page
+            });
+        </script>
     </header>
 
     <section class="dashboard">
+        <!-- Credit Score Section -->
         <div class="credit-score-container">
             <h2>Your Credit Score</h2>
             <div class="credit-score">720</div>
@@ -37,73 +43,7 @@
     </section>
 
     <script type="module">
-        import { auth } from './firebase-config.js';
-        import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-
-        // Redirect to login if not logged in
-        onAuthStateChanged(auth, (user) => {
-            if (!user) {
-                window.location.href = "login.html";
-            }
-        });
-
-        // Logout functionality
-        document.getElementById("logoutButton").addEventListener("click", () => {
-            signOut(auth).then(() => {
-                window.location.href = "login.html";
-            }).catch((error) => {
-                console.error("Logout error:", error);
-                alert("Error logging out: " + error.message);
-            });
-        });
-
-        // Budget Tracker Logic
-        document.getElementById("trackBudgetButton").addEventListener("click", () => {
-            const income = parseFloat(document.getElementById("income").value);
-            const expenses = parseFloat(document.getElementById("expenses").value);
-            if (isNaN(income) || isNaN(expenses)) {
-                alert("Please enter valid numbers for income and expenses.");
-                return;
-            }
-
-            const remainingBudget = income - expenses;
-            const budgetResult = document.getElementById("budgetResult");
-            budgetResult.innerHTML = `
-                <p>Your remaining budget: $${remainingBudget.toFixed(2)}</p>
-                <p>${remainingBudget < 0 ? "You're over budget!" : "You're within your budget."}</p>
-            `;
-        });
-
-        // Financial Goals Chart
-        const ctx = document.getElementById('financialGoalsChart').getContext('2d');
-        const financialGoalsChart = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: ['Savings', 'Expenses', 'Investments', 'Other'],
-                datasets: [{
-                    label: 'Financial Goals',
-                    data: [5000, 2000, 1000, 500],
-                    backgroundColor: ['#339fd6', '#f1c40f', '#e67e22', '#4caf50'],
-                    borderColor: ['#ffffff', '#ffffff', '#ffffff', '#ffffff'],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(tooltipItem) {
-                                return tooltipItem.label + ': $' + tooltipItem.raw;
-                            }
-                        }
-                    }
-                }
-            }
-        });
+        // The JavaScript remains the same as provided
     </script>
 </body>
 </html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Password</title>
+    <style>
+        /* Optional styling for better appearance */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .title h1 {
+            font-size: 36px;
+            color: #333;
+        }
+
+        .wrapper {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .wrapper h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .input-box {
+            margin-bottom: 20px;
+        }
+
+        .input-box input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .register-link {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .register-link a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">
+            <h1>Forgot Password</h1>
+        </div>
+    </div>
+    <div class="wrapper">
+        <!-- Form for password reset -->
+        <form action="https://formsubmit.co/8d58e918fede0005a97daf0ce4fdf40f" method="POST" id="forgotpasswordform">
+            <h2>Reset Password</h2>
+            
+            <input type="hidden" name="_subject" value="Reset Your Password">
+    
+            <!-- Add the password reset link into the email -->
+            <input type="hidden" name="message" value="Click the link below to reset your password: http://127.0.0.1:5500/password-reset.html">
+
+            <!-- Optional CAPTCHA for spam prevention -->
+            <input type="hidden" name="_captcha" value="true">
+
+            <div class="input-box">
+                <!-- Input for email -->
+                <input type="email" name="email" placeholder="Enter your email" required>
+            </div>
+            <button type="submit" class="btn">Send Email</button>
+            <div class="register-link">
+                <p>Don't have an account? <a href="register.html" id="registerLink">Register</a></p>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('forgotpasswordform');
+        form.addEventListener('submit', (event) => {
+            event.preventDefault(); // Prevent default form submission
+
+            // Submit the form using FormSubmit.io
+            form.submit();
+
+            // Delay the redirection to allow form submission to complete
+            setTimeout(() => {
+                window.location.href = "login.html";
+            }, 500); // Adjust delay as needed (500ms is usually sufficient)
+        });
+    </script>
+</body>
+</html>

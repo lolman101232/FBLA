@@ -6,41 +6,30 @@
     font-family: "Poppins", sans-serif;
 }
 
+
 body {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: url('growth-economy-with-coins-concept.jpg') no-repeat;
-    background-size: cover;
-    background-position: center;
     overflow: hidden;
+    background: url('growth-economy-with-coins-concept.jpg') center center / cover no-repeat; /* Bottom layer */
+    position: relative;
 }
+
 /* Wrapper styles */
 .wrapper {
     width: 420px;
-    background: rgba(0, 0, 0, 0.5);
-    border: 2px solid rgba(255, 255, 255, .3);
+    background: rgba(252, 252, 252, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.3);
     backdrop-filter: blur(15px);
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-    color: white;
+    color: #333;
     border-radius: 15px;
     padding: 40px 50px;
     position: relative;
-    transform: scale(1);
+    z-index: 2; /* Ensures it appears above the body::before logo */
     animation: scaleIn 0.6s ease-in-out forwards;
-}
-
-/* Keyframe animation for scaling effect on wrapper */
-@keyframes scaleIn {
-    0% {
-        transform: scale(0.5);
-        opacity: 0;
-    }
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
 }
 
 .wrapper h1 {
@@ -48,39 +37,31 @@ body {
     text-align: center;
     margin-bottom: 20px;
     font-weight: bold;
-    color: #0ba1ca;
+    color: #0077b6; /* Strong blue for title text */
     text-transform: uppercase;
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.6);
+    text-shadow: 2px 2px 5px rgba(91, 85, 85, 0.6);
 }
 
 /* Input box styles */
-.input-box {
-    width: 100%;
-    height: 50px;
-    margin: 30px 0;
-    position: relative;
-}
-
 .input-box input {
     width: 100%;
     height: 100%;
     background: transparent;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    border: 2px solid rgba(95, 162, 172, 0.3);
     outline: none;
     border-radius: 50px;
-    color: white;
+    color: #222; /* Adjusted to dark text color */
     padding: 20px 45px 20px 20px;
     font-size: 16px;
     transition: all 0.4s ease;
+    margin-bottom: 20px; /* Adds space between input boxes */
+
 }
 
 .input-box input::placeholder {
-    color: white;
-    font-size: 18px;
-    transition: color 0.3s ease;
+    color: #555; /* Medium gray for better contrast */
 }
 
-/* Electric blue on focus for input */
 .input-box input:focus {
     border-color: #00bfff;
     background: rgba(0, 191, 255, 0.2);
@@ -88,23 +69,18 @@ body {
 }
 
 .input-box input:focus::placeholder {
-    color: #00bfff;
+    color: #0077b6; /* Stronger blue for focus */
 }
 
-/* Icon inside input box */
 .input-box i {
     position: absolute;
     right: 20px;
     top: 50%;
     transform: translateY(-50%);
     font-size: 22px;
-    color: #fff;
+    color: #0077b6; /* Strong blue for visibility */
     transition: transform 0.3s ease;
-}
 
-/* When input is focused, icon moves */
-.input-box input:focus + i {
-    transform: translateY(-50%) rotate(360deg);
 }
 
 /* Remember and Forgot Section */
@@ -113,21 +89,21 @@ body {
     justify-content: space-between;
     font-size: 14.5px;
     margin: -15px 0 15px;
+    color: #222; /* Darker gray for readability */
 }
 
-.remember-forgot label input {
-    accent-color: #00bfff;
-    margin-right: 5px;
+.remember-forgot label {
+    color: #333; /* Adjusted for better visibility */
 }
 
 .remember-forgot a {
-    color: #fff;
+    color: #0077b6; /* Vibrant blue for links */
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
 .remember-forgot a:hover {
-    color: #00bfff;
+    color: #00bfff; /* Brighter blue on hover */
     text-decoration: underline;
 }
 
@@ -143,40 +119,33 @@ body {
     cursor: pointer;
     font-size: 18px;
     font-weight: 700;
-    color: white;
+    color: #fff; /* White text for button readability */
     transition: transform 0.3s ease, background 0.3s ease;
 }
 
-/* Hover effect for the button */
 .wrapper .btn:hover {
     background: linear-gradient(135deg, #22d2e6, #806bb5);
     transform: translateY(-5px);
 }
 
-/* Click effect on button */
-.wrapper .btn:active {
-    transform: scale(0.95);
-}
-
 /* Register link styles */
 .wrapper .register-link {
     font-size: 14.5px;
-    text-align: center;
+    text-align: center; /* Center-aligns the text */
     margin-top: 20px;
 }
 
 .register-link p a {
-    color: white;
+    color: #0077b6; /* Vibrant blue for links */
     text-decoration: none;
     font-weight: 600;
     transition: color 0.3s ease;
 }
 
 .register-link p a:hover {
-    color: #339fd6;
+    color: #00bfff; /* Brighter blue on hover */
     text-decoration: underline;
 }
-
 /* Container styles */
 .container {
     display: flex;
@@ -191,39 +160,22 @@ body {
     margin-bottom: 40px;
     font-size: 56px;
     font-weight: bold;
-    color: white;
+    color: #0077b6; /* Strong blue for title */
     text-transform: uppercase;
     letter-spacing: 2px;
     animation: glowEffect 2s infinite alternate;
 }
 
-/* Keyframe animation for glowing text */
-@keyframes glowEffect {
-    0% {
-        text-shadow: 0 0 10px #00bfff, 0 0 20px #00bfff, 0 0 30px #00bfff;
-    }
-    50% {
-        text-shadow: 0 0 15px #00bfff, 0 0 30px #00bfff, 0 0 45px #00bfff;
-    }
-    100% {
-        text-shadow: 0 0 10px #00bfff, 0 0 20px #00bfff, 0 0 30px #00bfff;
-    }
-}
-
-/* Title link styles */
 .title a {
     text-decoration: none;
-    color: #ffffff;
-    font-family: "bebas-nueue", sans-serif;
-    font-weight: bold;
-    letter-spacing: 2px;
+    color: #0077b6; /* Vibrant blue for link text */
 }
 
 .title a:hover {
-    color: #6c7375;
+    color: #00bfff; /* Brighter blue on hover */
 }
 
-/* Adding background animation */
+/* Body Overlay */
 body::after {
     content: '';
     position: absolute;
@@ -231,7 +183,19 @@ body::after {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(255, 255, 255, 0.6); /* Lightened overlay for better text visibility */
     z-index: -1;
 }
 
+
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px; /* Adjust width for the logo */
+    height: 200px; /* Adjust height for the logo */
+    background: url('creative-colorful-spark-logo-design-modern-style-logotype-business-brand-celebration-fireworks-stars-spark-logo-design-341392071.jpg-transformed.webp') center center / contain no-repeat; /* Logo layer */
+    z-index: 1; /* Ensures it appears above the background */
+}

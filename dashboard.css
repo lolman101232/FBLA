@@ -56,11 +56,13 @@ header h1 {
 /* Dashboard Container */
 .dashboard {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    flex-direction: column;
+    justify-content: space-around; /* Space evenly between sections */
+    align-items: flex-start; /* Align sections to the top */
+    flex-wrap: wrap; /* Enable wrapping on smaller screens */
     width: 100%;
+    padding: 20px;
+    gap: 20px; /* Add space between the sections */
+    box-sizing: border-box; /* Include padding in the width */
 }
 
 /* Credit Score Card */
