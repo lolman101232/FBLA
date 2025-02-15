@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Transaction Entry</title>
+    <link rel="stylesheet" href="manual.css">
+</head>
+<body>
+    <h2>Manual Transaction Entry</h2>
+    <form>
+        <label for="date">Date of Transaction:</label>
+        <input type="date" id="date" name="date" required>
+        
+        <label for="type">Transaction Type:</label>
+        <select id="type" name="type" required>
+            <option value="online">Online</option>
+            <option value="in-person">In-Person</option>
+        </select>
+        
+        <label for="amount">Amount:</label>
+        <input type="number" id="amount" name="amount" step="0.01" required>
+        
+        <label for="category">Category:</label>
+        <select id="category" name="category" required>
+            <option value="deposit">Deposit</option>
+            <option value="withdrawal">Withdrawal</option>
+            <option value="payment">Payment</option>
+            <option value="other">Other</option>
+        </select>
+        
+        <label for="purpose">Purpose:</label>
+        <textarea id="purpose" name="purpose" rows="3" required></textarea>
+        
+        <!-- Submit Transaction Button -->
+        <button type="button" id="openPopupBtn">Submit Transaction</button>
+    </form>
+
+    <!-- BEGIN: Popup Container (Initially Hidden) -->
+    <div id="popupContainer" style="visibility: hidden; transform: scale(0.1); position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.1); background: white; padding: 20px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); border-radius: 10px;">
+        <h2>Security Pin</h2>
+        <form>
+            <label for="pin">Enter your security pin:</label>
+            <input type="password" id="pin" name="pin" required>
+            <button type="button" id="pinSubmit">Enter PIN</button>
+            <button type="button" class="close-btn" id="closePopupBtn">X</button>
+        </form>
+    </div>
+    <!-- END: Popup Container -->
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const popup = document.getElementById("popupContainer");
+            const openPopupBtn = document.getElementById("openPopupBtn");
+            const closePopupBtn = document.getElementById("closePopupBtn");
+            const pinSubmit = document.getElementById("pinSubmit");
+
+            // Open popup function
+            function openPopup() {
+                popup.style.visibility = "visible";
+                popup.style.transform = "translate(-50%, -50%) scale(.85)";
+            }
+
+            // Close popup function
+            function closePopup() {
+                popup.style.visibility = "hidden";
+                popup.style.transform = "translate(-50%, -50%) scale(0.01)";
+            }
+
+            // Function to check PIN
+            function checkPin() {
+                const userPin = document.getElementById("pin").value.trim();
+                const savedPin = "1234"; // Replace with actual secure PIN storage
+
+                if (userPin === savedPin) {
+                    alert("Transaction Approved ✅");
+                    closePopup(); // Close popup after successful entry
+                } else {
+                    alert("Incorrect PIN ❌");
+                }
+            }
+
+            // Attach event listeners
+            openPopupBtn.addEventListener("click", openPopup);
+            closePopupBtn.addEventListener("click", closePopup);
+            pinSubmit.addEventListener("click", function (event) {
+                event.preventDefault(); // Prevent default form submission
+                checkPin();
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transactions</title>
+  <!-- Tailwind CSS -->
+  <link rel="stylesheet" href="dashboard.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900">
+  <aside class="sidebar">
+    <h2>My Accounts</h2>
+    <ul>
+        <li><a href="homepage.html">Dashboard</a></li>
+        <li><a href="transaction.html">Transactions</a></li>
+        <li><a href="#">Cash Flow</a></li>
+        <li><a href="#">Accounts</a></li>
+        <li><a href="#">Investments</a></li>
+        <li><a href="#">Categories</a></li>
+    </ul>
+</aside>
+
+  <div class="container mx-auto p-6 max-w-4xl">
+    <!-- Header -->
+   
+    <header class="mb-8">
+      <h1 class="text-3xl font-bold">Transactions</h1>
+      <p class="text-gray-500 mt-2">View and manage your recent purchases</p>
+    </header>
+
+    <!-- Summary Card -->
+    <div class="mb-8 p-4 bg-white shadow rounded">
+      <h2 class="text-lg font-semibold">Summary</h2>
+      <p class="text-gray-500">Your transaction overview for the past 30 days</p>
+      <div class="grid gap-4 grid-cols-2 mt-4">
+        <!-- Total Spent -->
+        <div class="p-4 bg-gray-100 rounded">
+          <div class="flex justify-between items-center">
+            <h3 class="text-sm font-medium">Total Spent</h3>
+            <span class="text-gray-400">💲</span>
+          </div>
+          <p class="text-2xl font-bold mt-2">$199.95</p>
+          <p class="text-xs text-gray-400">+20.1% from last month</p>
+        </div>
+        <!-- Active Subscriptions -->
+        <div class="p-4 bg-gray-100 rounded">
+          <div class="flex justify-between items-center">
+            <h3 class="text-sm font-medium">Active Subscriptions</h3>
+            <span class="text-gray-400">💳</span>
+          </div>
+          <p class="text-2xl font-bold mt-2">3</p>
+          <p class="text-xs text-gray-400">+1 new this month</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-xl font-semibold">Recent Transactions</h2>
+      <div class="flex space-x-2">
+        <select class="border border-gray-300 rounded px-2 py-1">
+          <option value="all">All Transactions</option>
+          <option value="subscriptions">Subscriptions</option>
+          <option value="one-time">One-time Purchases</option>
+        </select>
+        <input
+          type="text"
+          placeholder="Search transactions"
+          class="border border-gray-300 rounded px-4 py-2"
+        />
+        <!-- Add Transaction Button -->
+        <button
+          id="addTransactionButton"
+          class="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600", onclick="openPopup()">+ Add Transaction</button>
+          <div class="popup" id="popup">
+            <h2>Scan with Reciept or Manually</h2>
+            <p>Choose how you want to add your transaction</p>
+            <button onclick="window.location.href='scan.html'">Scan Receipt</button>
+            <button onclick="window.location.href='Manual.html'">Manually</button>
+            <button type = "button" class="close-btn" onclick="closePopup()"> X </button>
+          </div>
+      </div>
+    </div>
+    <script>
+      let popup = document.getElementById("popup");
+      function openPopup(){
+        popup.classList.add("open-popup");
+        }
+      function closePopup(){
+        popup.classList.remove("open-popup");
+      }
+    </script>
+    <!-- Transactions List -->
+    <div class="space-y-4">
+      <div class="p-4 bg-white shadow rounded flex items-center">
+        <div class="h-10 w-10 bg-gray-200 rounded-full flex items-center justify-center mr-4">
+          <span>🛒</span>
+        </div>
+        <div class="flex-1">
+          <p class="text-sm font-medium">Annual Subscription</p>
+          <p class="text-xs text-gray-400">🗓️ 2023-06-01</p>
+        </div>
+        <div class="ml-auto font-medium">$89.99</div>
+      </div>
+      <!-- Repeat for other transactions -->
+    </div>
+
+    <!-- Load More Button -->
+    <div class="mt-8 flex justify-center">
+      <button class="border border-gray-300 rounded px-4 py-2">Load More</button>
+    </div>
+  </div>
+</body>
+</html>

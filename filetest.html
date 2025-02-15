@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        button {
+            margin: 10px 0;
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #output {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 15px;
+            background-color: #f9f9f9;
+            max-width: 500px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>File Manager</h1>
+    <button id="readFileBtn">Open and Read a File</button><br>
+    <button id="editFileBtn">Edit a File (Append Text)</button><br>
+    <button id="createFileBtn">Create a New File</button><br>
+    <button id="listFilesBtn">Display File Names</button><br>
+    <div id="output"></div>
+
+    <script type="module">
+        import { listFiles, readFile, createFile, editFile } from './homepage-backend.js';
+
+        const outputDiv = document.getElementById('output');
+
+        // Display file names
+        document.getElementById('listFilesBtn').addEventListener('click', async () => {
+            outputDiv.textContent = "Loading file names...";
+            const files = await listFiles();
+            if (files.length > 0) {
+                outputDiv.textContent = "Files:\n" + files.join("\n");
+            } else {
+                outputDiv.textContent = "No files available.";
+            }
+        });
+
+        // Open and read a file
+        document.getElementById('readFileBtn').addEventListener('click', async () => {
+            const fileName = prompt("Enter the file name to read:");
+            if (fileName) {
+                outputDiv.textContent = `Reading file '${fileName}'...`;
+                await readFile(fileName);
+            }
+        });
+
+        // Create a new file
+        document.getElementById('createFileBtn').addEventListener('click', async () => {
+            const fileName = prompt("Enter the new file name:");
+            const content = prompt("Enter content for the new file:");
+            if (fileName && content) {
+                await createFile(fileName, content);
+                outputDiv.textContent = `File '${fileName}' created successfully.`;
+            }
+        });
+
+        // Edit a file (append text)
+        document.getElementById('editFileBtn').addEventListener('click', async () => {
+            const fileName = prompt("Enter the file name to edit:");
+            const textToAppend = prompt("Enter text to append:");
+            if (fileName && textToAppend) {
+                await editFile(fileName, textToAppend);
+                outputDiv.textContent = `Text appended to file '${fileName}' successfully.`;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <title>Spark Finance Login</title>
-    <script type="module" src="login.js"></script> <!-- Load login.js only -->
+    <script type="module" src="login.js"></script> <!-- Load login.js -->
 </head>
 <body>
     <div class="container">
@@ -22,12 +22,11 @@
                     <input type="password" id="password" placeholder="Password" required>
                 </div>
                 <div class="remember-forgot">
-                    <label><input type="checkbox" id="rememberMe"> Remember me</label>
                     <a href="forgot.html">Forgot password?</a>
                 </div>
                 <button type="submit" class="btn">Login</button>
                 <div class="register-link">
-                    <p>Don't have an account? <a href="register.html" id="registerLink">Register</a></p> <!-- Updated href -->
+                    <p>Don't have an account? <a href="register.html" id="registerLink">Register</a></p>
                 </div>
                 <p id="message"></p>
             </form>

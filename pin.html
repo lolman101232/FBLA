@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="pin.css">
+    <title>Security Pin</title>
+</head>
+<body>
+    <!-- BEGIN: Popup Container -->
+    <button type="button" id="openPopupBtn">+ Add Transaction</button>
+
+    <div id="popupContainer">
+        <div class="popup" id="popupContent">
+            <h2>Security Pin</h2>
+            <form>
+                <label for="pin">Enter your security pin:</label>
+                <input type="password" id="pin" name="pin" required>
+                <button type="button" id="pinSubmit">Enter PIN</button>
+                <button type="button" class="close-btn" id="closePopupBtn">X</button>
+            </form>
+        </div>
+    </div>
+    <!-- END: Popup Container -->
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const popup = document.getElementById("popupContainer");
+            const openPopupBtn = document.getElementById("openPopupBtn");
+            const closePopupBtn = document.getElementById("closePopupBtn");
+            const pinSubmit = document.getElementById("pinSubmit");
+
+            // Open popup function
+            function openPopup() {
+                popup.style.visibility = "visible";
+                popup.style.transform = "translate(-50%, -50%) scale(1)";
+            }
+
+            // Close popup function
+            function closePopup() {
+                popup.style.visibility = "hidden";
+                popup.style.transform = "translate(-50%, -50%) scale(0.01)";
+            }
+
+            // Function to check PIN
+            function checkPin() {
+                const userPin = document.getElementById("pin").value.trim();
+                const savedPin = "1234"; // Replace with actual secure PIN storage
+
+                if (userPin === savedPin) {
+                    alert("Transaction Approved ✅");
+                    closePopup(); // Close popup after successful entry
+                } else {
+                    alert("Incorrect PIN ❌");
+                }
+            }
+
+            // Attach event listeners
+            openPopupBtn.addEventListener("click", openPopup);
+            closePopupBtn.addEventListener("click", closePopup);
+            pinSubmit.addEventListener("click", function (event) {
+                event.preventDefault(); // Prevent default form submission
+                checkPin();
+            });
+        });
+    </script>
+</body>
+</html>

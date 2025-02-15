@@ -3,47 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spark Finance - Dashboard</title>
+    <title>Finance Dashboard</title>
     <link rel="stylesheet" href="dashboard.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <header>
-        <h1>Welcome to Spark Finance</h1>
-        <button id="logoutButton">Logout</button>
-        <script>
-            document.getElementById('logoutButton').addEventListener('click', () => {
-                window.location.href = 'login.html'; // Replace 'login.html' with the correct path to your login page
-            });
-        </script>
-    </header>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2>My Accounts</h2>
+        <ul>
+            <li><a href="setup.html">Get Started!</a></li>
+            <li><a href="homepage.html">Dashboard</a></li>
+            <li><a href="transaction.html">Transactions</a></li>
+            <li><a href="#">Cash Flow</a></li>
+            <li><a href="#">Accounts</a></li>
+            <li><a href="#">Investments</a></li>
+            <li><a href="#">Categories</a></li>
+        </ul>
+    </aside>
 
+    <!-- Main Dashboard -->
     <section class="dashboard">
-        <!-- Credit Score Section -->
-        <div class="credit-score-container">
-            <h2>Your Credit Score</h2>
-            <div class="credit-score">720</div>
-            <p>Based on recent financial activity</p>
-        </div>
+        <header class="dashboard-header">
+            <h1>Welcome, <span id="userName">User</span></h1>
+            <button id="logoutButton" class="btn primary">Logout</button>
+        </header>
 
-        <!-- Budget Tracker Section -->
-        <div class="budget-tracker-container">
-            <h2>Budget Tracker</h2>
-            <input type="number" id="income" placeholder="Enter your monthly income" />
-            <input type="number" id="expenses" placeholder="Enter your monthly expenses" />
-            <button id="trackBudgetButton">Track Budget</button>
-            <div id="budgetResult"></div>
-        </div>
+        <div class="panel-grid">
+            <!-- Monthly Spending Panel -->
+            <div class="panel">
+                <h2>Monthly Spending</h2>
+                <p class="monthly-spending">$522 over budget</p>
+                <canvas id="spendingChart"></canvas>
+            </div>
+            <div class="grid grid-cols-2 gap-4 p-6">
+           
+            <!-- Transactions to Review -->
+            <div class="panel">
+                <h2>Transactions to Review</h2>
+                <ul class="transactions-to-review">
+                    <li>Loading transactions...</li>
+                </ul>
+            </div>
 
-        <!-- Financial Goals Chart Section -->
-        <div class="financial-goals-container">
-            <h2>Your Financial Goals</h2>
-            <canvas id="financialGoalsChart" width="400" height="400"></canvas>
+            <!-- Top Categories -->
+            <div class="panel">
+                <h2>Top Categories</h2>
+                <div class="chart-container">
+                    <canvas id="categoriesChart"></canvas>
+                </div>
+            </div>
         </div>
     </section>
 
     <script type="module">
-        // The JavaScript remains the same as provided
+        import { auth, database } from './firebase-config.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+        import { get, ref } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+        const userNameElement = document.getElementById("userName");
+        const monthlySpendingElement = document.querySelector(".monthly-spending");
+        const spendingChartCanvas = document.getElementById("spendingChart");
+        const categoriesChartCanvas = document.getElementById("categoriesChart");
+        const transactionsToReviewList = document.querySelector(".transactions-to-review");
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userRef = ref(database, "users/" + user.uid);
+                const snapshot = await get(userRef);
+
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+
+                    // Update user name and monthly spending
+                    userNameElement.textContent = userData.full_name.split(" ")[0];
+                    monthlySpendingElement.textContent = `$${userData.monthlySpending} over budget`;
+
+                    // Update transactions to review
+                    const transactions = userData.transactions || [];
+                    if (transactions.length > 0) {
+                        transactionsToReviewList.innerHTML = ""; // Clear existing list
+                        transactions.forEach(transaction => {
+                            const listItem = document.createElement("li");
+                            listItem.innerHTML = `
+                                ${transaction.name} <span class="tag ${transaction.category.toLowerCase()}">${transaction.category}</span>
+                            `;
+                            transactionsToReviewList.appendChild(listItem);
+                        });
+                    } else {
+                        transactionsToReviewList.innerHTML = "<li>No transactions to review</li>";
+                    }
+
+                    // Update spending chart
+                    const spendingData = userData.spendingData || [0, 0, 0, 0];
+                    new Chart(spendingChartCanvas.getContext("2d"), {
+                        type: "line",
+                        data: {
+                            labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
+                            datasets: [{
+                                label: "Spending",
+                                data: spendingData,
+                                borderColor: "#e94560",
+                                fill: false,
+                            }],
+                        },
+                    });
+
+                    // Update categories chart
+                    const categoriesData = userData.categoriesData || [0, 0, 0];
+                    new Chart(categoriesChartCanvas.getContext("2d"), {
+                        type: "doughnut",
+                        data: {
+                            labels: ["Home", "Food", "Car"],
+                            datasets: [{
+                                data: categoriesData,
+                                backgroundColor: ["#4caf50", "#007BFF", "#e94560"],
+                            }],
+                        },
+                    });
+                } else {
+                    console.error("No user data found in the database.");
+                }
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+
+        // Logout button functionality
+        document.getElementById("logoutButton").addEventListener("click", () => {
+            localStorage.clear();
+            window.location.href = "login.html";
+        });
     </script>
 </body>
 </html>

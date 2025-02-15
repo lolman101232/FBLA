@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="register-style.css">
     <title>Spark Finance Register</title>
 </head>
 <body>
@@ -26,7 +26,7 @@
                 <div class="input-box">
                     <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
                 </div>
-                <button type="submit">Register</button>
+                <button type="submit" class="btn">Register</button>
                 <div class="register-link">
                     <p>Already have an account? <a href="login.html">Login here</a></p>
                 </div>
@@ -96,6 +96,7 @@
                     email: email,
                     full_name: fullName,
                     created_at: new Date().toISOString(),
+                    transactions: []
                 };
 
                 await set(userRef, userData);

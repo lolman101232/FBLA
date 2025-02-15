@@ -35,6 +35,9 @@ async function register(event) {
       email: email,
       full_name: fullName,
       created_at: new Date().toISOString(),
+      transactions: [],
+      monthlySpending: 0,
+      
     };
 
     await userRef.set(userData);

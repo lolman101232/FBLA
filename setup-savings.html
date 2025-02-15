@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Financial Setup - Savings Goals</title>
+  <link rel="stylesheet" href="setup.css">
+</head>
+<body>
+  <div class="setup-container">
+    <div class="card">
+      <header class="card-header">
+        <h1>Financial Setup</h1>
+        <p>Let's get your finances in order</p>
+      </header>
+      <div class="card-content">
+        <!-- Steps -->
+        <div class="steps">
+          <div class="step completed">
+            <div class="icon">&#x1F4BC;</div>
+            <span>Income</span>
+          </div>
+          <div class="step completed">
+            <div class="icon">&#x1F4B3;</div>
+            <span>Expenses</span>
+          </div>
+          <div class="step completed">
+            <div class="icon">&#x1F4C8;</div>
+            <span>Subscriptions</span>
+          </div>
+          <div class="step completed">
+            <div class="icon" style="background: #4caf50; color: #fff;">&#x1F4B0;</div>
+            <span>Savings Goals</span>
+          </div>
+        </div>
+
+        <!-- Form Content -->
+        <div class="form-content">
+          <div class="step-content active">
+            <label for="shortTerm">Short-Term Savings Goal</label>
+            <input type="number" id="shortTerm" placeholder="500">
+            
+            <label for="longTerm">Long-Term Savings Goal</label>
+            <input type="number" id="longTerm" placeholder="10000">
+            
+            <label for="monthlySavings">Monthly Savings Contribution</label>
+            <input type="number" id="monthlySavings" placeholder="200">
+            
+            <label for="emergencyFund">Emergency Fund Target</label>
+            <input type="number" id="emergencyFund" placeholder="3000">
+          </div>
+        </div>
+      </div>
+      <footer class="card-footer">
+        <p><a href="setup-subscriptions.html" class="btn outline">Back</a></p>
+        <p><a href="setup-complete.html" class="btn primary">Finish</a></p>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>

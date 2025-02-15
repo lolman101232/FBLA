@@ -9,149 +9,211 @@
 /* Body Styles */
 body {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background: url('growth-economy-with-coins-concept.jpg') no-repeat;
-    background-size: cover;
-    background-position: center;
-    flex-direction: column;
-    position: relative;
+    height: 100vh;
+    background: #f5f6fa;
+    color: #333;
 }
 
-/* Header Styles */
-header {
-    position: absolute;
-    top: 20px;
-    right: 30px;
+/* Sidebar Styles */
+.sidebar {
+    width: 250px;
+    background: #fff;
+    border-right: 1px solid #ddd;
+    padding: 20px;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: calc(100% - 60px);
+    flex-direction: column;
+    justify-content: flex-start ;
 }
 
-header h1 {
-    font-size: 32px;
+.sidebar h2 {
+    font-size: 20px;
     font-weight: bold;
-    color: white;
+    margin-bottom: 20px;
 }
 
-/* Logout Button */
-#logoutButton {
-    padding: 10px 20px;
-    background-color: #e94560;
-    border: none;
-    color: white;
+.sidebar ul {
+    list-style: none;
+}
+
+.sidebar ul li {
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
     font-size: 16px;
-    border-radius: 30px;
-    cursor: pointer;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.3s ease;
 }
 
-#logoutButton:hover {
-    background-color: #ff4f5f;
+.sidebar ul li svg {
+    margin-right: 10px;
+}
+
+.sidebar ul li a {
+    text-decoration: none;
+    color: #555;
+    transition: color 0.3s;
+}
+
+.sidebar ul li a:hover {
+    color: #007BFF;
 }
 
 /* Dashboard Container */
 .dashboard {
-    display: flex;
-    justify-content: space-around; /* Space evenly between sections */
-    align-items: flex-start; /* Align sections to the top */
-    flex-wrap: wrap; /* Enable wrapping on smaller screens */
-    width: 100%;
+    flex: 1;
     padding: 20px;
-    gap: 20px; /* Add space between the sections */
-    box-sizing: border-box; /* Include padding in the width */
+    overflow-y: auto;
 }
 
-/* Credit Score Card */
-.credit-score-container {
-    width: 420px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(255, 255, 255, .2);
-    backdrop-filter: blur(20px);
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-    color: white;
-    border-radius: 10px;
-    padding: 40px;
-    text-align: center;
-}
-
-.credit-score-container h2 {
-    font-size: 36px;
-    font-weight: 600;
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 20px;
 }
 
-.credit-score {
-    font-size: 3em;
+.dashboard-header h1 {
+    font-size: 24px;
     font-weight: bold;
-    color: #4caf50;
-    margin-bottom: 15px;
+    color: #333;
 }
 
-.credit-score-container p {
-    font-size: 16px;
-    color: #ddd;
-}
-
-/* Budget Tracker */
-.budget-tracker-container {
-    width: 420px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(255, 255, 255, .2);
-    backdrop-filter: blur(20px);
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-    color: white;
-    border-radius: 10px;
-    padding: 40px;
-    margin-top: 30px;
-    text-align: center;
-}
-
-.budget-tracker-container input {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 10px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    color: white;
-    background: transparent;
-    font-size: 16px;
-}
-
-.budget-tracker-container input::placeholder {
-    color: #ddd;
-}
-
-.budget-tracker-container button {
-    padding: 10px 20px;
-    background-color: #f1c40f;
+#logoutButton {
+    padding: 8px 16px;
+    background: #007BFF;
+    color: #fff;
     border: none;
-    color: white;
-    font-size: 16px;
-    border-radius: 30px;
+    border-radius: 20px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
-.budget-tracker-container button:hover {
-    background-color: #e67e22;
+#logoutButton:hover {
+    background-color: #0056b3;
 }
 
-/* Financial Goals Section */
-.financial-goals-container {
-    width: 420px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(255, 255, 255, .2);
-    backdrop-filter: blur(20px);
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-    color: white;
+/* Grid Layout for Panels */
+.panel-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.panel {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Specific Panel Styles */
+.panel h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.monthly-spending {
+    color: #e94560;
+}
+
+.transactions-to-review {
+    list-style: none;
+    padding: 0;
+}
+
+.transactions-to-review li {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.transactions-to-review .tag {
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    color: #fff;
+}
+
+.tag.groceries {
+    background: #4caf50;
+}
+
+.tag.subscriptions {
+    background: #007BFF;
+}
+
+/* Chart Container */
+.chart-container {
+    height: 200px;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    .panel-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        width: 100px;
+    }
+}
+
+.popup {
+    width: 800px;
+    height: 250px;
+    background: #fff;
     border-radius: 10px;
-    padding: 40px;
-    margin-top: 30px;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.1);
     text-align: center;
+    padding: 0 30px 30px;
+    color: #333;
+    visibility: hidden;
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+
+}
+.open-popup {
+    top: 50%;
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1);
+}
+.popup h2 {
+    font-size: 38px;
+    font-family: 'Arial', sans-serif; /* Use a professional, modern font */
+    font-weight: bold; /* Make text bold */
+    margin-bottom: 20px;
+    margin: 30px 0 10px;
+}
+.popup button{
+
+    padding: 8px 16px;
+    background: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
 }
 
-/*
+/* Close button (X) positioned at top-right */
+.popup button.close-btn {
+    position: absolute;
+    top: 0px;
+    right: 20px;
+    background: red;
+    color: white;
+    border: none;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 0px 30px;
+    border-radius: 12%;
+    cursor: pointer;
+}
+
+.popup button.close-btn:hover {
+    background: darkred;
+}

@@ -33,7 +33,7 @@ body {
 }
 
 .wrapper h1 {
-    font-size: 36px;
+    font-size: 26px;
     text-align: center;
     margin-bottom: 20px;
     font-weight: bold;
@@ -86,7 +86,7 @@ body {
 /* Remember and Forgot Section */
 .remember-forgot {
     display: flex;
-    justify-content: right;
+    justify-content: space-between;
     font-size: 14.5px;
     margin: -15px 0 15px;
     color: #222; /* Darker gray for readability */
@@ -198,14 +198,4 @@ body::before {
     height: 200px; /* Adjust height for the logo */
     background: url('creative-colorful-spark-logo-design-modern-style-logotype-business-brand-celebration-fireworks-stars-spark-logo-design-341392071.jpg-transformed.webp') center center / contain no-repeat; /* Logo layer */
     z-index: 1; /* Ensures it appears above the background */
-}
-
-#message {
-    text-align: center; /* Center the text horizontally */
-    color: red; /* Set the text color to red */
-    font-size: 16px; /* Adjust the font size as needed */
-    margin-top: 20px; /* Add spacing above the message */
-    font-weight: bold; /* Make the text bold */
-
-
 }

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Financial Setup</title>
+  <link rel="stylesheet" href="setup.css">
+</head>
+<body>
+  <div class="setup-container">
+    <div class="card">
+      <header class="card-header">
+        <h1>Financial Setup</h1>
+        <p>Let's get your finances in order</p>
+      </header>
+      <div class="card-content">
+        <!-- Steps -->
+        <div class="steps">
+          <div class="step completed">
+            <div class="icon">&#x1F4BC;</div>
+            <span>Income</span>
+          </div>
+          <div class="step">
+            <div class="icon">&#x1F4B3;</div>
+            <span>Expenses</span>
+          </div>
+          <div class="step">
+            <div class="icon">&#x1F4C8;</div>
+            <span>Subscriptions</span>
+          </div>
+          <div class="step">
+            <div class="icon">&#x1F4B0;</div>
+            <span>Savings Goals</span>
+          </div>
+        </div>
+
+        <!-- Form Content -->
+        <div class="form-content">
+          <div class="step-content active">
+            <label for="income">Annual Income</label>
+            <input type="number" id="income" placeholder="50000">
+            
+            <label for="employment">Employment Type</label>
+            <select id="employment">
+              <option value="" disabled selected>Select employment type</option>
+              <option value="fulltime">Full-time</option>
+              <option value="parttime">Part-time</option>
+              <option value="selfemployed">Self-employed</option>
+              <option value="unemployed">Unemployed</option>
+            </select>
+
+            <label for="payFrequency">Pay Frequency</label>
+            <select id="payFrequency">
+              <option value="" disabled selected>Select pay frequency</option>
+              <option value="weekly">Weekly</option>
+              <option value="biweekly">Bi-weekly</option>
+              <option value="monthly">Monthly</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <footer class="card-footer">
+        <button class="btn outline" disabled>Back</button>
+        <button id="saveAndContinue" class="btn primary">Save & Continue</button>
+      </footer>
+    </div>
+  </div>
+
+  <script type="module">
+    import { auth, database } from './firebase-config.js'; // Import Firebase config
+    import { ref, set } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+    document.getElementById("saveAndContinue").addEventListener("click", async () => {
+      const user = auth.currentUser;
+
+      if (user) {
+        const income = document.getElementById("income").value;
+        const employment = document.getElementById("employment").value;
+        const payFrequency = document.getElementById("payFrequency").value;
+
+        if (!income || !employment || !payFrequency) {
+          alert("Please complete all fields.");
+          return;
+        }
+
+        const userData = {
+          income: parseInt(income, 10),
+          employmentType: employment,
+          payFrequency: payFrequency,
+        };
+
+        // Save data to Firebase
+        const userRef = ref(database, "users/" + user.uid + "/financialSetup");
+        await set(userRef, userData);
+
+        alert("Data saved successfully!");
+        window.location.href = "setup-expenses.html"; // Navigate to the next step
+      } else {
+        alert("No authenticated user. Please log in.");
+        window.location.href = "login.html";
+      }
+    });
+  </script>
+</body>
+</html>
