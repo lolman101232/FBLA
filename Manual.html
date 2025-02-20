@@ -1,93 +1,294 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manual Transaction Entry</title>
-    <link rel="stylesheet" href="manual.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manual Transaction Entry</title>
+  <style>
+    /* General Styling */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      flex-direction: column;
+    }
+
+    /* Form Styling */
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+      width: 350px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      color: #333;
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      font-size: 16px;
+      padding: 10px;
+      border: none;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: 0.3s;
+      margin-top: 15px;
+      background-color: #4CAF50;
+      color: black;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    /* Tab Styling */
+    .tab-buttons {
+      display: flex;
+      width: 350px;
+      margin-bottom: 10px;
+    }
+
+    .tab-buttons button {
+      flex: 1;
+      background: #ddd;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .tab-buttons button.active {
+      background: #4CAF50;
+      color: white;
+      font-weight: bold;
+    }
+
+    .tab-content {
+      display: none;
+      width: 350px;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+  </style>
 </head>
 <body>
-    <h2>Manual Transaction Entry</h2>
-    <form>
-        <label for="date">Date of Transaction:</label>
-        <input type="date" id="date" name="date" required>
-        
-        <label for="type">Transaction Type:</label>
-        <select id="type" name="type" required>
-            <option value="online">Online</option>
-            <option value="in-person">In-Person</option>
-        </select>
-        
-        <label for="amount">Amount:</label>
-        <input type="number" id="amount" name="amount" step="0.01" required>
-        
-        <label for="category">Category:</label>
-        <select id="category" name="category" required>
-            <option value="deposit">Deposit</option>
-            <option value="withdrawal">Withdrawal</option>
-            <option value="payment">Payment</option>
-            <option value="other">Other</option>
-        </select>
-        
-        <label for="purpose">Purpose:</label>
-        <textarea id="purpose" name="purpose" rows="3" required></textarea>
-        
-        <!-- Submit Transaction Button -->
-        <button type="button" id="openPopupBtn">Submit Transaction</button>
+  <h2>Manual Transaction Entry</h2>
+  <!-- Tab Navigation -->
+  <div class="tab-buttons">
+    <button id="addTabBtn" class="active">Add Transaction</button>
+    <button id="editTabBtn">Edit Transaction</button>
+  </div>
+
+  <!-- Add Transaction Tab -->
+  <div id="addTransactionTab" class="tab-content active">
+    <form id="addTransactionForm">
+      <label for="date">Date of Transaction (YYYY-MM-DD):</label>
+      <input type="date" id="date" name="date" required>
+
+      <label for="transactionType">Transaction Type:</label>
+      <select id="transactionType" name="transactionType" required>
+        <option value="online">Online</option>
+        <option value="in-person">In-Person</option>
+      </select>
+
+      <label for="amount">Amount:</label>
+      <input type="number" id="amount" name="amount" step="0.01" required>
+
+      <label for="category">Category:</label>
+      <select id="category" name="category" required>
+        <option value="">-- Select Category --</option>
+        <option value="subscription">Subscription</option>
+        <option value="one-time">One-Time Purchase</option>
+      </select>
+
+      <!-- One-Time Purchase Description (shown only if one-time is selected) -->
+      <div id="oneTimeDetails" style="display: none;">
+        <label for="oneTimeDescription">Describe the purchase:</label>
+        <input type="text" id="oneTimeDescription" name="oneTimeDescription" placeholder="Enter purchase details">
+      </div>
+
+      <!-- Security PIN as part of the form -->
+      <label for="pinAdd">Security PIN:</label>
+      <input type="password" id="pinAdd" name="pinAdd" required>
+
+      <!-- Submit Transaction Button -->
+      <button type="submit" id="submitTransactionBtn">Submit Transaction</button>
     </form>
+  </div>
 
-    <!-- BEGIN: Popup Container (Initially Hidden) -->
-    <div id="popupContainer" style="visibility: hidden; transform: scale(0.1); position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.1); background: white; padding: 20px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); border-radius: 10px;">
-        <h2>Security Pin</h2>
-        <form>
-            <label for="pin">Enter your security pin:</label>
-            <input type="password" id="pin" name="pin" required>
-            <button type="button" id="pinSubmit">Enter PIN</button>
-            <button type="button" class="close-btn" id="closePopupBtn">X</button>
-        </form>
-    </div>
-    <!-- END: Popup Container -->
+  <!-- Edit Transaction Tab -->
+  <div id="editTransactionTab" class="tab-content">
+    <form id="editTransactionForm">
+      <label for="editDate">Select Transaction Date to Edit (YYYY-MM-DD):</label>
+      <input type="date" id="editDate" name="editDate" required>
+      
+      <!-- Security PIN for editing -->
+      <label for="pinEdit">Security PIN:</label>
+      <input type="password" id="pinEdit" name="pinEdit" required>
+      
+      <button type="button" id="loadTransactionBtn">Load Transaction</button>
+    </form>
+  </div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const popup = document.getElementById("popupContainer");
-            const openPopupBtn = document.getElementById("openPopupBtn");
-            const closePopupBtn = document.getElementById("closePopupBtn");
-            const pinSubmit = document.getElementById("pinSubmit");
+  <!-- Firebase and Application Code -->
+  <script type="module">
+    // Import Firebase modules from the CDN.
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
+    import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
 
-            // Open popup function
-            function openPopup() {
-                popup.style.visibility = "visible";
-                popup.style.transform = "translate(-50%, -50%) scale(.85)";
-            }
+    // Firebase configuration – replace with your own project's config
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
 
-            // Close popup function
-            function closePopup() {
-                popup.style.visibility = "hidden";
-                popup.style.transform = "translate(-50%, -50%) scale(0.01)";
-            }
+    // Initialize Firebase and Firestore
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-            // Function to check PIN
-            function checkPin() {
-                const userPin = document.getElementById("pin").value.trim();
-                const savedPin = "1234"; // Replace with actual secure PIN storage
+    // Simple PIN check function. Replace "1234" with your secure PIN logic.
+    function isPinValid(pin) {
+      const validPin = "1234";
+      return pin === validPin;
+    }
 
-                if (userPin === savedPin) {
-                    alert("Transaction Approved ✅");
-                    closePopup(); // Close popup after successful entry
-                } else {
-                    alert("Incorrect PIN ❌");
-                }
-            }
+    // Handle Add Transaction Form Submission
+    const addTransactionForm = document.getElementById("addTransactionForm");
+    addTransactionForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-            // Attach event listeners
-            openPopupBtn.addEventListener("click", openPopup);
-            closePopupBtn.addEventListener("click", closePopup);
-            pinSubmit.addEventListener("click", function (event) {
-                event.preventDefault(); // Prevent default form submission
-                checkPin();
-            });
-        });
-    </script>
+      // Gather form values
+      const date = document.getElementById("date").value;
+      const transactionType = document.getElementById("transactionType").value;
+      const amount = parseFloat(document.getElementById("amount").value);
+      const category = document.getElementById("category").value;
+      const oneTimeDescription = document.getElementById("oneTimeDescription").value || "";
+      const pin = document.getElementById("pinAdd").value.trim();
+
+      // Check the PIN
+      if (!isPinValid(pin)) {
+        alert("Incorrect PIN ❌");
+        return;
+      }
+
+      // Create a transaction object. Adjust the structure as needed.
+      const transactionData = {
+        date, // stored in YYYY-MM-DD format
+        transactionType,
+        amount,
+        category,
+        type: category, // using category field for filtering (subscription or one-time)
+        oneTimeDescription: category === "one-time" ? oneTimeDescription : "",
+      };
+
+      try {
+        // Save transaction data to Firebase Firestore (collection: "transactions")
+        const docRef = await addDoc(collection(db, "transactions"), transactionData);
+        alert("Transaction saved successfully ✅");
+        addTransactionForm.reset();
+        // Optionally, hide the one-time details section after resetting
+        document.getElementById("oneTimeDetails").style.display = "none";
+      } catch (error) {
+        console.error("Error adding document: ", error);
+        alert("Failed to save transaction ❌");
+      }
+    });
+
+    // Handle Edit Transaction (Example: Load transaction for a given date)
+    const loadTransactionBtn = document.getElementById("loadTransactionBtn");
+    loadTransactionBtn.addEventListener("click", async () => {
+      const editDate = document.getElementById("editDate").value;
+      const pinEdit = document.getElementById("pinEdit").value.trim();
+
+      if (!editDate) {
+        alert("Please select a date to edit.");
+        return;
+      }
+
+      if (!isPinValid(pinEdit)) {
+        alert("Incorrect PIN ❌");
+        return;
+      }
+
+      try {
+        // Example query: fetch transactions for the given date
+        const q = query(collection(db, "transactions"), where("date", "==", editDate));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+          alert("No transactions found for the selected date.");
+        } else {
+          querySnapshot.forEach((doc) => {
+            // For demonstration, we'll simply alert the document data.
+            // In a real app, populate the form fields for editing.
+            alert("Loaded transaction: " + JSON.stringify(doc.data()));
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching document: ", error);
+        alert("Failed to load transaction ❌");
+      }
+    });
+
+    // Show/hide one-time purchase details based on category selection.
+    const categorySelect = document.getElementById("category");
+    const oneTimeDetails = document.getElementById("oneTimeDetails");
+    categorySelect.addEventListener("change", function() {
+      if (categorySelect.value === "one-time") {
+        oneTimeDetails.style.display = "block";
+      } else {
+        oneTimeDetails.style.display = "none";
+      }
+    });
+
+    // Tab switching functionality
+    const addTabBtn = document.getElementById("addTabBtn");
+    const editTabBtn = document.getElementById("editTabBtn");
+    const addTransactionTab = document.getElementById("addTransactionTab");
+    const editTransactionTab = document.getElementById("editTransactionTab");
+
+    addTabBtn.addEventListener("click", function() {
+      addTabBtn.classList.add("active");
+      editTabBtn.classList.remove("active");
+      addTransactionTab.classList.add("active");
+      editTransactionTab.classList.remove("active");
+    });
+
+    editTabBtn.addEventListener("click", function() {
+      editTabBtn.classList.add("active");
+      addTabBtn.classList.remove("active");
+      editTransactionTab.classList.add("active");
+      addTransactionTab.classList.remove("active");
+    });
+  </script>
 </body>
 </html>
