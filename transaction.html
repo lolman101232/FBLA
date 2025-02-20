@@ -1,38 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Transactions</title>
   <!-- Tailwind CSS -->
-  <link rel="stylesheet" href="dashboard.css">
+  <link rel="stylesheet" href="dashboard.css" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Popup styles */
+    .popup {
+      display: none;
+      position: fixed;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -30%);
+      background: #fff;
+      padding: 1.5rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      border-radius: 0.5rem;
+      z-index: 50;
+    }
+    .popup.open-popup {
+      display: block;
+    }
+  </style>
 </head>
 <body class="bg-gray-100 text-gray-900">
-  <aside class="sidebar">
-    <h2>My Accounts</h2>
-    <ul>
-        <li><a href="homepage.html">Dashboard</a></li>
-        <li><a href="transaction.html">Transactions</a></li>
-        <li><a href="#">Cash Flow</a></li>
-        <li><a href="#">Accounts</a></li>
-        <li><a href="#">Investments</a></li>
-        <li><a href="#">Categories</a></li>
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar p-4 bg-white shadow mb-6">
+    <h2 class="text-xl font-bold mb-4">My Accounts</h2>
+    <ul class="space-y-2">
+      <li><a href="homepage.html" class="text-blue-600 hover:underline">Dashboard</a></li>
+      <li><a href="transaction.html" class="text-blue-600 hover:underline">Transactions</a></li>
+      <li><a href="#" class="text-blue-600 hover:underline">Cash Flow</a></li>
+      <li><a href="#" class="text-blue-600 hover:underline">Accounts</a></li>
+      <li><a href="#" class="text-blue-600 hover:underline">Investments</a></li>
+      <li><a href="#" class="text-blue-600 hover:underline">Categories</a></li>
     </ul>
-</aside>
+  </aside>
 
+  <!-- Main Container -->
   <div class="container mx-auto p-6 max-w-4xl">
     <!-- Header -->
-   
     <header class="mb-8">
       <h1 class="text-3xl font-bold">Transactions</h1>
-      <p class="text-gray-500 mt-2">View and manage your recent purchases</p>
+      <p class="text-gray-500 mt-2">View and manage your recent transactions</p>
     </header>
 
-    <!-- Summary Card -->
+    <!-- Summary Card with Dropdown and Current Date -->
     <div class="mb-8 p-4 bg-white shadow rounded">
-      <h2 class="text-lg font-semibold">Summary</h2>
-      <p class="text-gray-500">Your transaction overview for the past 30 days</p>
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold">Summary</h2>
+        <!-- Dropdown with current date -->
+        <div class="flex items-center space-x-2">
+          <select id="summaryPeriod" class="border border-gray-300 rounded px-2 py-1">
+            <option value="week">This Week</option>
+            <option value="month" selected>This Month</option>
+            <option value="year">This Year</option>
+          </select>
+          <!-- Current date displayed here -->
+          <span id="currentDate" class="text-gray-500"></span>
+        </div>
+      </div>
+      <p class="text-gray-500 mt-2" id="summaryText">
+        Your transaction overview for the selected period
+      </p>
       <div class="grid gap-4 grid-cols-2 mt-4">
         <!-- Total Spent -->
         <div class="p-4 bg-gray-100 rounded">
@@ -40,8 +73,8 @@
             <h3 class="text-sm font-medium">Total Spent</h3>
             <span class="text-gray-400">💲</span>
           </div>
-          <p class="text-2xl font-bold mt-2">$199.95</p>
-          <p class="text-xs text-gray-400">+20.1% from last month</p>
+          <p class="text-2xl font-bold mt-2" id="totalSpent">$0.00</p>
+          <p class="text-xs text-gray-400">Based on selected period</p>
         </div>
         <!-- Active Subscriptions -->
         <div class="p-4 bg-gray-100 rounded">
@@ -49,67 +82,188 @@
             <h3 class="text-sm font-medium">Active Subscriptions</h3>
             <span class="text-gray-400">💳</span>
           </div>
-          <p class="text-2xl font-bold mt-2">3</p>
-          <p class="text-xs text-gray-400">+1 new this month</p>
+          <p class="text-2xl font-bold mt-2" id="activeSubscriptions">0</p>
+          <p class="text-xs text-gray-400">Based on selected period</p>
         </div>
       </div>
     </div>
 
-    <!-- Recent Transactions -->
-    <div class="flex justify-between items-center mb-6">
+    <!-- Transactions Controls -->
+    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 space-y-4 sm:space-y-0">
       <h2 class="text-xl font-semibold">Recent Transactions</h2>
-      <div class="flex space-x-2">
-        <select class="border border-gray-300 rounded px-2 py-1">
+      <div class="flex flex-wrap gap-2 items-center">
+        <!-- Dropdown for filtering type -->
+        <select id="transactionType" class="border border-gray-300 rounded px-2 py-1">
           <option value="all">All Transactions</option>
-          <option value="subscriptions">Subscriptions</option>
+          <option value="subscription">Subscriptions</option>
           <option value="one-time">One-time Purchases</option>
         </select>
+        <!-- Search bar for date -->
         <input
           type="text"
-          placeholder="Search transactions"
+          id="transactionSearch"
+          placeholder="Search by date (YYYY-MM-DD)"
           class="border border-gray-300 rounded px-4 py-2"
         />
-        <!-- Add Transaction Button -->
+        <!-- Add Transaction Button using original code -->
         <button
           id="addTransactionButton"
-          class="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600", onclick="openPopup()">+ Add Transaction</button>
-          <div class="popup" id="popup">
-            <h2>Scan with Reciept or Manually</h2>
-            <p>Choose how you want to add your transaction</p>
-            <button onclick="window.location.href='scan.html'">Scan Receipt</button>
-            <button onclick="window.location.href='Manual.html'">Manually</button>
-            <button type = "button" class="close-btn" onclick="closePopup()"> X </button>
-          </div>
+          class="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600"
+          onclick="openPopup()"
+        >
+          + Add Transaction
+        </button>
       </div>
     </div>
-    <script>
-      let popup = document.getElementById("popup");
-      function openPopup(){
-        popup.classList.add("open-popup");
-        }
-      function closePopup(){
-        popup.classList.remove("open-popup");
-      }
-    </script>
-    <!-- Transactions List -->
-    <div class="space-y-4">
-      <div class="p-4 bg-white shadow rounded flex items-center">
-        <div class="h-10 w-10 bg-gray-200 rounded-full flex items-center justify-center mr-4">
-          <span>🛒</span>
-        </div>
-        <div class="flex-1">
-          <p class="text-sm font-medium">Annual Subscription</p>
-          <p class="text-xs text-gray-400">🗓️ 2023-06-01</p>
-        </div>
-        <div class="ml-auto font-medium">$89.99</div>
+
+    <!-- Add Transaction Popup (using original code) -->
+    <div class="popup" id="popup">
+      <h2 class="text-lg font-semibold mb-2">Scan with Receipt or Manually</h2>
+      <p class="mb-4">Choose how you want to add your transaction</p>
+      <div class="flex space-x-4 mb-4">
+        <button class="bg-green-500 text-white rounded px-4 py-2 hover:bg-green-600" onclick="window.location.href='scan.html'">
+          Scan Receipt
+        </button>
+        <button class="bg-purple-500 text-white rounded px-4 py-2 hover:bg-purple-600" onclick="window.location.href='Manual.html'">
+          Manually
+        </button>
       </div>
-      <!-- Repeat for other transactions -->
+      <button type="button" class="close-btn bg-gray-300 px-2 py-1 rounded" onclick="closePopup()">X</button>
+    </div>
+
+    <!-- Transactions List (Table Format: Date | Category | Amount) -->
+    <div class="bg-white shadow rounded overflow-x-auto">
+      <table class="min-w-full">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="py-3 px-4 text-left">Date</th>
+            <th class="py-3 px-4 text-left">Category</th>
+            <th class="py-3 px-4 text-left">Amount</th>
+          </tr>
+        </thead>
+        <tbody class="text-gray-700" id="transactionsTableBody">
+          <!-- Transactions will be dynamically populated here -->
+        </tbody>
+      </table>
     </div>
 
     <!-- Load More Button -->
     <div class="mt-8 flex justify-center">
-      <button class="border border-gray-300 rounded px-4 py-2">Load More</button>
+      <button class="border border-gray-300 rounded px-4 py-2 hover:bg-gray-200">Load More</button>
     </div>
   </div>
+
+  <!-- JavaScript Section -->
+  <script>
+    // Set the current date next to the dropdown.
+    document.getElementById('currentDate').textContent =
+      new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+    // Sample transactions data (replace with your actual data)
+    const transactions = [
+      { date: '2025-02-19', category: 'Subscription', amount: 29.99, type: 'subscription' },
+      { date: '2025-02-18', category: 'Groceries', amount: 55.00, type: 'one-time' },
+      { date: '2025-02-15', category: 'Entertainment', amount: 45.50, type: 'one-time' },
+      { date: '2025-02-14', category: 'Subscription', amount: 29.99, type: 'subscription' },
+      { date: '2025-01-25', category: 'Dining', amount: 70.00, type: 'one-time' },
+      { date: '2024-12-20', category: 'Subscription', amount: 29.99, type: 'subscription' },
+    ];
+
+    // Filter transactions by the selected period using calendar boundaries.
+    function filterTransactionsByPeriod(period) {
+      const now = new Date();
+      if (period === 'week') {
+        // Determine the start of the current week (assuming Sunday as first day)
+        const dayOfWeek = now.getDay(); 
+        const startOfWeek = new Date(now);
+        startOfWeek.setHours(0, 0, 0, 0);
+        startOfWeek.setDate(now.getDate() - dayOfWeek);
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 7);
+        return transactions.filter(t => {
+          const tDate = new Date(t.date);
+          return tDate >= startOfWeek && tDate < endOfWeek;
+        });
+      } else if (period === 'month') {
+        // Start and end of the current month
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+        return transactions.filter(t => {
+          const tDate = new Date(t.date);
+          return tDate >= startOfMonth && tDate < endOfMonth;
+        });
+      } else if (period === 'year') {
+        // Start and end of the current year
+        const startOfYear = new Date(now.getFullYear(), 0, 1);
+        const endOfYear = new Date(now.getFullYear() + 1, 0, 1);
+        return transactions.filter(t => {
+          const tDate = new Date(t.date);
+          return tDate >= startOfYear && tDate < endOfYear;
+        });
+      }
+      return transactions;
+    }
+
+    // Update the summary section based on the selected period.
+    function updateSummary() {
+      const period = document.getElementById('summaryPeriod').value;
+      const filtered = filterTransactionsByPeriod(period);
+      const total = filtered.reduce((sum, t) => sum + t.amount, 0);
+      const subscriptionsCount = filtered.filter(t => t.type === 'subscription').length;
+      document.getElementById('totalSpent').textContent = "$" + total.toFixed(2);
+      document.getElementById('activeSubscriptions').textContent = subscriptionsCount;
+      document.getElementById('summaryText').textContent = "Your transaction overview for the selected period";
+    }
+
+    // Update the transactions table based on type and search filters.
+    function updateTransactionsList() {
+      const typeFilter = document.getElementById('transactionType').value;
+      const searchText = document.getElementById('transactionSearch').value.trim();
+      
+      let filtered = transactions.filter(t => {
+        if (typeFilter === 'all') return true;
+        return t.type === typeFilter;
+      });
+      
+      if (searchText) {
+        filtered = filtered.filter(t => t.date.includes(searchText));
+      }
+      
+      const tableBody = document.getElementById('transactionsTableBody');
+      tableBody.innerHTML = "";
+      filtered.forEach(t => {
+        const row = document.createElement('tr');
+        row.classList.add("border-b");
+        row.innerHTML = `
+          <td class="py-3 px-4">${t.date}</td>
+          <td class="py-3 px-4">${t.category}</td>
+          <td class="py-3 px-4">$${t.amount.toFixed(2)}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Popup functions (using your original code logic)
+    function openPopup(){
+      const popup = document.getElementById("popup");
+      popup.classList.add("open-popup");
+    }
+    function closePopup(){
+      const popup = document.getElementById("popup");
+      popup.classList.remove("open-popup");
+    }
+
+    // Event listeners
+    document.getElementById('summaryPeriod').addEventListener('change', () => {
+      updateSummary();
+      updateTransactionsList();
+    });
+    document.getElementById('transactionType').addEventListener('change', updateTransactionsList);
+    document.getElementById('transactionSearch').addEventListener('input', updateTransactionsList);
+
+    // Initial rendering
+    updateSummary();
+    updateTransactionsList();
+  </script>
 </body>
 </html>
