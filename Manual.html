@@ -4,100 +4,49 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Manual Transaction Entry</title>
+  <link rel="stylesheet" href="manual.css">
   <style>
-    /* General Styling */
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      flex-direction: column;
-    }
-
-    /* Form Styling */
-    form {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-      width: 350px;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    h2 {
-      color: #333;
-      margin-bottom: 15px;
-    }
-
-    label {
-      display: block;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-
-    input, select, textarea {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-
-    button {
-      font-size: 16px;
-      padding: 10px;
-      border: none;
-      cursor: pointer;
-      border-radius: 8px;
-      transition: 0.3s;
-      margin-top: 15px;
-      background-color: #4CAF50;
-      color: black;
-      width: 100%;
-    }
-
-    button:hover {
-      background-color: #45a049;
-    }
-
-    /* Tab Styling */
+    /* Basic styling for tab buttons */
     .tab-buttons {
       display: flex;
-      width: 350px;
-      margin-bottom: 10px;
+      margin-bottom: 1rem;
+      border-bottom: 2px solid #ccc;
     }
-
     .tab-buttons button {
-      flex: 1;
-      background: #ddd;
+      background: none;
       border: none;
-      padding: 10px;
+      padding: 10px 20px;
       cursor: pointer;
-      transition: background 0.3s;
+      font-size: 1rem;
     }
-
     .tab-buttons button.active {
-      background: #4CAF50;
-      color: white;
+      border-bottom: 2px solid #333;
       font-weight: bold;
     }
-
     .tab-content {
       display: none;
-      width: 350px;
     }
-
     .tab-content.active {
       display: block;
+    }
+    /* Popup container styling */
+    #popupContainer {
+      visibility: hidden;
+      transform: translate(-50%, -50%) scale(0.1);
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      background: white;
+      padding: 20px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      z-index: 100;
     }
   </style>
 </head>
 <body>
   <h2>Manual Transaction Entry</h2>
+  
   <!-- Tab Navigation -->
   <div class="tab-buttons">
     <button id="addTabBtn" class="active">Add Transaction</button>
@@ -126,13 +75,13 @@
         <option value="one-time">One-Time Purchase</option>
       </select>
 
-      <!-- One-Time Purchase Description (shown only if one-time is selected) -->
+      <!-- One-Time Purchase Description: hidden by default -->
       <div id="oneTimeDetails" style="display: none;">
         <label for="oneTimeDescription">Describe the purchase:</label>
         <input type="text" id="oneTimeDescription" name="oneTimeDescription" placeholder="Enter purchase details">
       </div>
 
-      <!-- Security PIN as part of the form -->
+      <!-- Security PIN field inserted in the form -->
       <label for="pinAdd">Security PIN:</label>
       <input type="password" id="pinAdd" name="pinAdd" required>
 
@@ -147,12 +96,13 @@
       <label for="editDate">Select Transaction Date to Edit (YYYY-MM-DD):</label>
       <input type="date" id="editDate" name="editDate" required>
       
-      <!-- Security PIN for editing -->
+      <!-- Security PIN field for editing -->
       <label for="pinEdit">Security PIN:</label>
       <input type="password" id="pinEdit" name="pinEdit" required>
       
       <button type="button" id="loadTransactionBtn">Load Transaction</button>
     </form>
+    <!-- For simplicity, editing functionality is represented by an alert -->
   </div>
 
   <!-- Firebase and Application Code -->
@@ -207,12 +157,12 @@
         amount,
         category,
         type: category, // using category field for filtering (subscription or one-time)
-        oneTimeDescription: category === "one-time" ? oneTimeDescription : "",
+        oneTimeDescription: category === "one-time" ? oneTimeDescription : ""
       };
 
       try {
         // Save transaction data to Firebase Firestore (collection: "transactions")
-        const docRef = await addDoc(collection(db, "transactions"), transactionData);
+        await addDoc(collection(db, "transactions"), transactionData);
         alert("Transaction saved successfully ✅");
         addTransactionForm.reset();
         // Optionally, hide the one-time details section after resetting
