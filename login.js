@@ -21,7 +21,7 @@ loginForm.addEventListener("submit", async (event) => {
         console.log("User logged in:", userCredential.user);
 
         // Redirect to homepage on success
-        window.location.href = "setup.html";
+        window.location.href = "homepage.html";
     } catch (error) {
         console.error("Login error:", error);
         message.textContent = "Incorrect email or password. Please try again.";

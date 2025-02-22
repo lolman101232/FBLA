@@ -42,6 +42,12 @@ async function register(event) {
 
     await userRef.set(userData);
     alert("User registered successfully!");
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        window.location.href = "setup.html";
+      }
+    });
+
   } catch (error) {
     console.error("Registration error:", error);
     alert(error.message);

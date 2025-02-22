@@ -93,7 +93,6 @@
         const userRef = ref(database, "users/" + user.uid + "/financialSetup");
         await set(userRef, userData);
 
-        alert("Data saved successfully!");
         window.location.href = "setup-expenses.html"; // Navigate to the next step
       } else {
         alert("No authenticated user. Please log in.");
