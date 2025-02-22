@@ -25,6 +25,154 @@
       display: block;
     }
   </style>
+  <!-- Firebase and App Code -->
+  <script type="module">
+    // Import Firebase modules from the CDN.
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
+
+    // Firebase configuration (replace with your own config)
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // Initialize Firebase and Firestore.
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Function to fetch transactions from Firestore.
+    async function fetchTransactions() {
+      const transactionsCol = collection(db, "transactions");
+      const transactionsSnapshot = await getDocs(transactionsCol);
+      // Format each transaction (convert Timestamp to string if needed).
+      const transactionsList = transactionsSnapshot.docs.map(doc => {
+        const data = doc.data();
+        if (data.date && data.date.toDate) {
+          data.date = data.date.toDate().toISOString().split('T')[0];
+        }
+        return data;
+      });
+      return transactionsList;
+    }
+
+    // Global variable to store fetched transaction data.
+    let transactionsData = [];
+
+    // Load transactions from Firebase and update the UI.
+    async function loadTransactions() {
+      transactionsData = await fetchTransactions();
+      updateSummary();
+      updateTransactionsList();
+    }
+
+    // Filter transactions by the selected period using calendar boundaries.
+    function filterTransactionsByPeriod(period) {
+      const now = new Date();
+      if (period === 'week') {
+        // Determine start of the current week (Sunday as first day)
+        const dayOfWeek = now.getDay();
+        const startOfWeek = new Date(now);
+        startOfWeek.setHours(0, 0, 0, 0);
+        startOfWeek.setDate(now.getDate() - dayOfWeek);
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 7);
+        return transactionsData.filter(t => {
+          const tDate = new Date(t.date);
+          return tDate >= startOfWeek && tDate < endOfWeek;
+        });
+      } else if (period === 'month') {
+        // Start and end of the current month.
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+        return transactionsData.filter(t => {
+          const tDate = new Date(t.date);
+          return tDate >= startOfMonth && tDate < endOfMonth;
+        });
+      } else if (period === 'year') {
+        // Start and end of the current year.
+        const startOfYear = new Date(now.getFullYear(), 0, 1);
+        const endOfYear = new Date(now.getFullYear() + 1, 0, 1);
+        return transactionsData.filter(t => {
+          const tDate = new Date(t.date);
+          return tDate >= startOfYear && tDate < endOfYear;
+        });
+      }
+      return transactionsData;
+    }
+
+    // Update the summary section based on the selected period.
+    function updateSummary() {
+      const period = document.getElementById('summaryPeriod').value;
+      const filtered = filterTransactionsByPeriod(period);
+      const total = filtered.reduce((sum, t) => sum + parseFloat(t.amount), 0);
+      const subscriptionsCount = filtered.filter(t => t.type === 'subscription').length;
+      document.getElementById('totalSpent').textContent = "$" + total.toFixed(2);
+      document.getElementById('activeSubscriptions').textContent = subscriptionsCount;
+      document.getElementById('summaryText').textContent = "Your transaction overview for the selected period";
+    }
+
+    // Update the transactions table based on filtering criteria.
+    function updateTransactionsList() {
+      const typeFilter = document.getElementById('transactionType').value;
+      const searchText = document.getElementById('transactionSearch').value.trim();
+      
+      let filtered = transactionsData.filter(t => {
+        if (typeFilter === 'all') return true;
+        return t.type === typeFilter;
+      });
+
+      if (searchText) {
+        filtered = filtered.filter(t => t.date.includes(searchText));
+      }
+
+      const tableBody = document.getElementById('transactionsTableBody');
+      tableBody.innerHTML = "";
+      filtered.forEach(t => {
+        const row = document.createElement('tr');
+        row.classList.add("border-b");
+        row.innerHTML = `
+          <td class="py-3 px-4">${t.date}</td>
+          <td class="py-3 px-4">${t.category}</td>
+          <td class="py-3 px-4">$${parseFloat(t.amount).toFixed(2)}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Popup functions.
+    function openPopup(){
+      const popup = document.getElementById("popup");
+      popup.classList.add("open-popup");
+    }
+    function closePopup(){
+      const popup = document.getElementById("popup");
+      popup.classList.remove("open-popup");
+    }
+
+    // Expose popup functions to the global scope so the inline onclick works.
+    window.openPopup = openPopup;
+    window.closePopup = closePopup;
+
+    // Set the current date next to the summary dropdown.
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById('currentDate').textContent =
+        new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      // Event listeners for filters.
+      document.getElementById('summaryPeriod').addEventListener('change', () => {
+        updateSummary();
+        updateTransactionsList();
+      });
+      document.getElementById('transactionType').addEventListener('change', updateTransactionsList);
+      document.getElementById('transactionSearch').addEventListener('input', updateTransactionsList);
+      // Load transactions from Firebase.
+      loadTransactions();
+    });
+  </script>
 </head>
 <body class="bg-gray-100 text-gray-900">
   <!-- Sidebar Navigation -->
@@ -39,7 +187,6 @@
       <li><a href="#" class="text-blue-600 hover:underline">Categories</a></li>
     </ul>
   </aside>
-
   <!-- Main Container -->
   <div class="container mx-auto p-6 max-w-4xl">
     <!-- Header -->
@@ -47,19 +194,16 @@
       <h1 class="text-3xl font-bold">Transactions</h1>
       <p class="text-gray-500 mt-2">View and manage your recent transactions</p>
     </header>
-
     <!-- Summary Card with Dropdown and Current Date -->
     <div class="mb-8 p-4 bg-white shadow rounded">
       <div class="flex items-center justify-between">
         <h2 class="text-lg font-semibold">Summary</h2>
-        <!-- Dropdown with current date -->
         <div class="flex items-center space-x-2">
           <select id="summaryPeriod" class="border border-gray-300 rounded px-2 py-1">
             <option value="week">This Week</option>
             <option value="month" selected>This Month</option>
             <option value="year">This Year</option>
           </select>
-          <!-- Current date displayed here -->
           <span id="currentDate" class="text-gray-500"></span>
         </div>
       </div>
@@ -67,7 +211,6 @@
         Your transaction overview for the selected period
       </p>
       <div class="grid gap-4 grid-cols-2 mt-4">
-        <!-- Total Spent -->
         <div class="p-4 bg-gray-100 rounded">
           <div class="flex justify-between items-center">
             <h3 class="text-sm font-medium">Total Spent</h3>
@@ -76,7 +219,6 @@
           <p class="text-2xl font-bold mt-2" id="totalSpent">$0.00</p>
           <p class="text-xs text-gray-400">Based on selected period</p>
         </div>
-        <!-- Active Subscriptions -->
         <div class="p-4 bg-gray-100 rounded">
           <div class="flex justify-between items-center">
             <h3 class="text-sm font-medium">Active Subscriptions</h3>
@@ -87,25 +229,21 @@
         </div>
       </div>
     </div>
-
     <!-- Transactions Controls -->
     <div class="flex flex-col sm:flex-row justify-between items-center mb-6 space-y-4 sm:space-y-0">
       <h2 class="text-xl font-semibold">Recent Transactions</h2>
       <div class="flex flex-wrap gap-2 items-center">
-        <!-- Dropdown for filtering type -->
         <select id="transactionType" class="border border-gray-300 rounded px-2 py-1">
           <option value="all">All Transactions</option>
           <option value="subscription">Subscriptions</option>
           <option value="one-time">One-time Purchases</option>
         </select>
-        <!-- Search bar for date -->
         <input
           type="text"
           id="transactionSearch"
           placeholder="Search by date (YYYY-MM-DD)"
           class="border border-gray-300 rounded px-4 py-2"
         />
-        <!-- Add Transaction Button using original code -->
         <button
           id="addTransactionButton"
           class="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600"
@@ -115,8 +253,7 @@
         </button>
       </div>
     </div>
-
-    <!-- Add Transaction Popup (using original code) -->
+    <!-- Add Transaction Popup -->
     <div class="popup" id="popup">
       <h2 class="text-lg font-semibold mb-2">Scan with Receipt or Manually</h2>
       <p class="mb-4">Choose how you want to add your transaction</p>
@@ -130,7 +267,6 @@
       </div>
       <button type="button" class="close-btn bg-gray-300 px-2 py-1 rounded" onclick="closePopup()">X</button>
     </div>
-
     <!-- Transactions List (Table Format: Date | Category | Amount) -->
     <div class="bg-white shadow rounded overflow-x-auto">
       <table class="min-w-full">
@@ -142,128 +278,14 @@
           </tr>
         </thead>
         <tbody class="text-gray-700" id="transactionsTableBody">
-          <!-- Transactions will be dynamically populated here -->
+          <!-- Data loaded from Firebase -->
         </tbody>
       </table>
     </div>
-
     <!-- Load More Button -->
     <div class="mt-8 flex justify-center">
       <button class="border border-gray-300 rounded px-4 py-2 hover:bg-gray-200">Load More</button>
     </div>
   </div>
-
-  <!-- JavaScript Section -->
-  <script>
-    // Set the current date next to the dropdown.
-    document.getElementById('currentDate').textContent =
-      new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-
-    // Sample transactions data (replace with your actual data)
-    const transactions = [
-      { date: '2025-02-19', category: 'Subscription', amount: 29.99, type: 'subscription' },
-      { date: '2025-02-18', category: 'Groceries', amount: 55.00, type: 'one-time' },
-      { date: '2025-02-15', category: 'Entertainment', amount: 45.50, type: 'one-time' },
-      { date: '2025-02-14', category: 'Subscription', amount: 29.99, type: 'subscription' },
-      { date: '2025-01-25', category: 'Dining', amount: 70.00, type: 'one-time' },
-      { date: '2024-12-20', category: 'Subscription', amount: 29.99, type: 'subscription' },
-    ];
-
-    // Filter transactions by the selected period using calendar boundaries.
-    function filterTransactionsByPeriod(period) {
-      const now = new Date();
-      if (period === 'week') {
-        // Determine the start of the current week (assuming Sunday as first day)
-        const dayOfWeek = now.getDay(); 
-        const startOfWeek = new Date(now);
-        startOfWeek.setHours(0, 0, 0, 0);
-        startOfWeek.setDate(now.getDate() - dayOfWeek);
-        const endOfWeek = new Date(startOfWeek);
-        endOfWeek.setDate(startOfWeek.getDate() + 7);
-        return transactions.filter(t => {
-          const tDate = new Date(t.date);
-          return tDate >= startOfWeek && tDate < endOfWeek;
-        });
-      } else if (period === 'month') {
-        // Start and end of the current month
-        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-        return transactions.filter(t => {
-          const tDate = new Date(t.date);
-          return tDate >= startOfMonth && tDate < endOfMonth;
-        });
-      } else if (period === 'year') {
-        // Start and end of the current year
-        const startOfYear = new Date(now.getFullYear(), 0, 1);
-        const endOfYear = new Date(now.getFullYear() + 1, 0, 1);
-        return transactions.filter(t => {
-          const tDate = new Date(t.date);
-          return tDate >= startOfYear && tDate < endOfYear;
-        });
-      }
-      return transactions;
-    }
-
-    // Update the summary section based on the selected period.
-    function updateSummary() {
-      const period = document.getElementById('summaryPeriod').value;
-      const filtered = filterTransactionsByPeriod(period);
-      const total = filtered.reduce((sum, t) => sum + t.amount, 0);
-      const subscriptionsCount = filtered.filter(t => t.type === 'subscription').length;
-      document.getElementById('totalSpent').textContent = "$" + total.toFixed(2);
-      document.getElementById('activeSubscriptions').textContent = subscriptionsCount;
-      document.getElementById('summaryText').textContent = "Your transaction overview for the selected period";
-    }
-
-    // Update the transactions table based on type and search filters.
-    function updateTransactionsList() {
-      const typeFilter = document.getElementById('transactionType').value;
-      const searchText = document.getElementById('transactionSearch').value.trim();
-      
-      let filtered = transactions.filter(t => {
-        if (typeFilter === 'all') return true;
-        return t.type === typeFilter;
-      });
-      
-      if (searchText) {
-        filtered = filtered.filter(t => t.date.includes(searchText));
-      }
-      
-      const tableBody = document.getElementById('transactionsTableBody');
-      tableBody.innerHTML = "";
-      filtered.forEach(t => {
-        const row = document.createElement('tr');
-        row.classList.add("border-b");
-        row.innerHTML = `
-          <td class="py-3 px-4">${t.date}</td>
-          <td class="py-3 px-4">${t.category}</td>
-          <td class="py-3 px-4">$${t.amount.toFixed(2)}</td>
-        `;
-        tableBody.appendChild(row);
-      });
-    }
-
-    // Popup functions (using your original code logic)
-    function openPopup(){
-      const popup = document.getElementById("popup");
-      popup.classList.add("open-popup");
-    }
-    function closePopup(){
-      const popup = document.getElementById("popup");
-      popup.classList.remove("open-popup");
-    }
-
-    // Event listeners
-    document.getElementById('summaryPeriod').addEventListener('change', () => {
-      updateSummary();
-      updateTransactionsList();
-    });
-    document.getElementById('transactionType').addEventListener('change', updateTransactionsList);
-    document.getElementById('transactionSearch').addEventListener('input', updateTransactionsList);
-
-    // Initial rendering
-    updateSummary();
-    updateTransactionsList();
-  </script>
 </body>
 </html>
