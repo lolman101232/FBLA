@@ -29,36 +29,72 @@
   <script type="module">
     // Import Firebase modules from the CDN.
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
+    import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-database.js";
 
     // Firebase configuration (replace with your own config)
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyAUJPviTJaAcoMoP6wPn_LCUam7JoQROTY",
+      authDomain: "fbla-9824b.firebaseapp.com",
+      databaseURL: "https://fbla-9824b-default-rtdb.firebaseio.com",
+      projectId: "fbla-9824b",
+      storageBucket: "fbla-9824b.firebasestorage.app",
+      messagingSenderId: "158608304412",
+      appId: "1:158608304412:web:4d47e398d859429ae472d9",
+      measurementId: "G-J87WWW4MQV"
     };
 
     // Initialize Firebase and Firestore.
     const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    const db = getDatabase(app);
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js";
 
+    const auth = getAuth(app);
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log("User is authenticated:", user.uid);
+        loadTransactions(); // Load transactions only if the user is authenticated
+      } else {
+        console.log("User is not authenticated.");
+        window.location.href = "login.html"; // Redirect to login page
+      }
+    });
     // Function to fetch transactions from Firestore.
-    async function fetchTransactions() {
-      const transactionsCol = collection(db, "transactions");
-      const transactionsSnapshot = await getDocs(transactionsCol);
-      // Format each transaction (convert Timestamp to string if needed).
-      const transactionsList = transactionsSnapshot.docs.map(doc => {
-        const data = doc.data();
-        if (data.date && data.date.toDate) {
-          data.date = data.date.toDate().toISOString().split('T')[0];
-        }
-        return data;
-      });
-      return transactionsList;
+// Function to fetch transactions from Firebase.
+  async function fetchTransactions() {
+    if (!auth.currentUser) {
+      console.error("No user is authenticated.");
+      return [];
     }
+
+    const maxRetries = 3;
+    let retries = 0;
+    while (retries < maxRetries) {
+      try {
+        const transactionsRef = ref(db, `users/${auth.currentUser.uid}/transactions`);
+        const snapshot = await get(transactionsRef);
+        if (snapshot.exists()) {
+          const transactionsList = Object.values(snapshot.val()).map(data => {
+            if (data.date) {
+              data.date = new Date(data.date).toISOString().split('T')[0];
+            }
+            return data;
+          });
+          console.log("Fetched Transactions:", transactionsList);
+          return transactionsList;
+        } else {
+          console.log("No transactions found.");
+        }
+      } catch (error) {
+        console.error(`Error fetching transactions (attempt ${retries + 1}):`, error);
+        retries++;
+        await new Promise(resolve => setTimeout(resolve, retries * 1000)); // Exponential backoff
+      }
+    }
+    console.error("Failed to fetch transactions after multiple retries.");
+    return [];
+  }
+
 
     // Global variable to store fetched transaction data.
     let transactionsData = [];
@@ -110,7 +146,7 @@
       const period = document.getElementById('summaryPeriod').value;
       const filtered = filterTransactionsByPeriod(period);
       const total = filtered.reduce((sum, t) => sum + parseFloat(t.amount), 0);
-      const subscriptionsCount = filtered.filter(t => t.type === 'subscription').length;
+      const subscriptionsCount = filtered.filter(t => t.category === 'Subscriptions').length;
       document.getElementById('totalSpent').textContent = "$" + total.toFixed(2);
       document.getElementById('activeSubscriptions').textContent = subscriptionsCount;
       document.getElementById('summaryText').textContent = "Your transaction overview for the selected period";
