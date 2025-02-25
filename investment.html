@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Investments - Stock Trends</title>
+  <link rel="stylesheet" href="dashboard.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <h2>My Accounts</h2>
+    <ul>
+      <li><a href="homepage.html">Dashboard</a></li>
+      <li><a href="transaction.html">Transactions</a></li>
+      <li><a href="#">Cash Flow</a></li>
+      <li><a href="#">Accounts</a></li>
+      <li><a href="investments.html">Investments</a></li>
+      <li><a href="#">Categories</a></li>
+    </ul>
+  </aside>
+
+  <section class="dashboard">
+    <header class="dashboard-header">
+      <h1>Investments: Top 5 Stocks for Teens</h1>
+    </header>
+
+    <div class="panel-grid" id="stocks-grid">
+      <p>Loading stock data...</p>
+    </div>
+  </section>
+
+  <script>
+    // List of stocks to display
+    const stocks = [
+      { symbol: 'AAPL', name: 'Apple Inc.' },
+      { symbol: 'MSFT', name: 'Microsoft Corporation' },
+      { symbol: 'TSLA', name: 'Tesla, Inc.' },
+      { symbol: 'NVDA', name: 'NVIDIA Corporation' },
+      { symbol: 'GOOGL', name: 'Alphabet Inc.' }
+    ];
+
+    // Twelve Data API settings – using the publicly available demo key.
+    // NOTE: The demo key ("demo") is for testing purposes only. 
+    // For full functionality, please sign up for your own API key at https://twelvedata.com/.
+    const API_KEY = 'demo';
+    const INTERVAL = '1day';
+    const OUTPUTSIZE = 30; // Number of days to retrieve
+
+    // Function to fetch stock data from Twelve Data API
+    async function fetchStockData(symbol) {
+      const url = `https://api.twelvedata.com/time_series?symbol=${symbol}&interval=${INTERVAL}&outputsize=${OUTPUTSIZE}&apikey=${API_KEY}`;
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        console.log("Raw data for " + symbol, data);  // Debug: view raw API response
+        if (!data || !data.values) {
+          console.error(`No valid data returned for ${symbol}`, data);
+          return null;
+        }
+        // Twelve Data returns data in descending order (most recent first).
+        // Reverse the array so the chart shows dates in chronological order.
+        const values = data.values.reverse();
+        const dates = values.map(item => item.datetime);
+        const prices = values.map(item => parseFloat(item.close));
+        return { times: dates, prices: prices };
+      } catch (error) {
+        console.error('Error fetching data for', symbol, error);
+        return null;
+      }
+    }
+
+    // Function to render a Chart.js line chart for the given stock data
+    function createChart(canvasId, label, times, prices) {
+      const ctx = document.getElementById(canvasId).getContext('2d');
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: times,
+          datasets: [{
+            label: `${label} Price (USD)`,
+            data: prices,
+            borderColor: '#007BFF',
+            backgroundColor: 'rgba(0,123,255,0.2)',
+            fill: true,
+            tension: 0.1
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Date'
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'Price (USD)'
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Function to create stock panels and render their charts
+    async function createStockPanels() {
+      const grid = document.getElementById('stocks-grid');
+      grid.innerHTML = ''; // Clear any placeholder text
+
+      for (let stock of stocks) {
+        // Create a panel element for the stock
+        const panel = document.createElement('div');
+        panel.classList.add('panel');
+        panel.innerHTML = `
+          <h2>${stock.name} (${stock.symbol})</h2>
+          <div class="chart-container">
+            <canvas id="chart-${stock.symbol}"></canvas>
+          </div>
+        `;
+        grid.appendChild(panel);
+
+        // Fetch stock data from Twelve Data and render the chart
+        try {
+          const stockData = await fetchStockData(stock.symbol);
+          if (stockData) {
+            createChart(`chart-${stock.symbol}`, stock.symbol, stockData.times, stockData.prices);
+          } else {
+            const errorMsg = document.createElement('p');
+            errorMsg.textContent = 'Error loading data.';
+            panel.appendChild(errorMsg);
+          }
+        } catch (error) {
+          console.error('Error processing stock:', stock.symbol, error);
+        }
+      }
+    }
+
+    // Load stock panels immediately and refresh every 5 minutes
+    createStockPanels();
+    setInterval(createStockPanels, 5 * 60 * 1000);
+  </script>
+</body>
+</html>
+
