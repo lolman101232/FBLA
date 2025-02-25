@@ -1,3 +1,24 @@
+// Firebase configuration (ensure Firebase is initialized in your HTML page)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js";
+import { getDatabase, ref, set, push} from "https://www.gstatic.com/firebasejs/9.0.2/firebase-database.js";
+
+// Firebase config (replace with your Firebase project configuration)
+const firebaseConfig = {
+    apiKey: "AIzaSyAUJPviTJaAcoMoP6wPn_LCUam7JoQROTY",
+    authDomain: "fbla-9824b.firebaseapp.com",
+    databaseURL: "https://fbla-9824b-default-rtdb.firebaseio.com",
+    projectId: "fbla-9824b",
+    storageBucket: "fbla-9824b.firebasestorage.app",
+    messagingSenderId: "158608304412",
+    appId: "1:158608304412:web:4d47e398d859429ae472d9",
+    measurementId: "G-J87WWW4MQV"
+  };
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// kMeans Clustering Function
 function kMeansCluster(data, numClusters) {
     const centroids = data.slice(0, numClusters);
     let clusters = new Array(data.length).fill(-1);
@@ -36,8 +57,22 @@ function kMeansCluster(data, numClusters) {
         });
     }
 
+    // Push the cluster data to Firebase
+    const newClusterRef = push(ref(db, 'kMeansClusters/'));
+    set(newClusterRef, {
+        clusters: clusters,
+        centroids: centroids,
+        timestamp: Date.now()
+    }).then(() => {
+        console.log("Cluster data successfully added to Firebase!");
+    }).catch((error) => {
+        console.error("Error adding cluster data: ", error);
+    });
+
     return clusters;
 }
+
+// Analyze Transactions Function
 function analyzeTransactions(userData) {
     let totalIncome = 0;
     let totalExpense = 0;
@@ -70,12 +105,59 @@ function analyzeTransactions(userData) {
 
     console.log("💰 Final Profit/Loss Calculation:", { Income: totalIncome, Expense: totalExpense });
 
+    // Push profit/loss data to Firebase
+    const newTransactionRef = push(ref(db, 'transactions/'));
+    set(newTransactionRef, {
+        totalIncome: totalIncome,
+        totalExpense: totalExpense,
+        timestamp: Date.now()
+    }).then(() => {
+        console.log("Transaction data successfully added to Firebase!");
+    }).catch((error) => {
+        console.error("Error adding transaction data: ", error);
+    });
+
     return {
         "Profit vs Loss": [totalIncome, totalExpense],
     };
 }
 
+// Sample Data for analyzeTransactions
+const userData = {
+    userId: "user123",
+    transactions: [
+        { amount: "1200", type: "income" },
+        { amount: "500", type: "expense" },
+        { amount: "800", type: "income" },
+        { amount: "200", type: "expense" },
+        { amount: "1500", type: "income" },
+        { amount: "300", type: "expense" },
+    ]
+};
 
+// Sample Data for kMeansCluster
+const data = [
+    [2, 3],    // Point 1
+    [1, 1],    // Point 2
+    [3, 4],    // Point 3
+    [10, 10],  // Point 4
+    [12, 12],  // Point 5
+    [11, 11],  // Point 6
+    [8, 8],    // Point 7
+    [13, 14],  // Point 8
+    [9, 9],    // Point 9
+    [15, 16],  // Point 10
+];
+const numClusters = 3;
 
-// Export function for use in HTML script
+// Call functions
+console.log("Analyzing Transactions...");
+const profitLoss = analyzeTransactions(userData);
+console.log("Profit vs Loss:", profitLoss);
+
+console.log("\nRunning K-Means Clustering...");
+const clusters = kMeansCluster(data, numClusters);
+console.log("Cluster Assignment:", clusters);
+
+// Export functions for use in HTML script
 export { analyzeTransactions, kMeansCluster };

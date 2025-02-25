@@ -97,11 +97,14 @@
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
+                console.log('Authenticated user:', user); // Logs the authenticated user object
+
                 const userRef = ref(database, "users/" + user.uid);
                 const snapshot = await get(userRef);
 
                 if (snapshot.exists()) {
                     const userData = snapshot.val();
+                    console.log('User data from database:', userData); // Logs user data retrieved from database
 
                     userNameElement.textContent = userData.full_name.split(" ")[0];
                     monthlySpendingElement.textContent = `$${userData.monthlySpending} over budget`;
@@ -153,6 +156,7 @@
                             }]
                         },
                     });
+
                     const clusterColors = ['#4caf50', '#007BFF']; // Colors for different clusters
                     const clusterLabels = ['Cluster 1', 'Cluster 2']; // Labels for clusters
 
@@ -210,16 +214,21 @@
                         }
                     });
 
-
                     document.getElementById("logoutButton").addEventListener("click", function() {
                         window.location.href = "login.html"; // Redirect to login page
                     });
-
                 } else {
                     console.error("No user data found in the database.");
                 }
+                const transactions = userData.transactions || [];
+                if (transactions.length === 0) {
+                    console.warn("No transactions found for this user.");
+                } else {
+                    console.log("Transactions found:", transactions);
+                }
             } else {
-                window.location.href = "login.html";
+                console.log('No authenticated user');
+                window.location.href = "login.html"; // Redirect to login if no user is authenticated
             }
         });
     </script>
