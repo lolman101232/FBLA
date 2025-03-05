@@ -30,6 +30,7 @@ This project is a comprehensive personal finance management application designed
 - **Transactions:** Enables users to add, edit, and filter financial transactions.
 - **Investments:** Provides real-time stock trends and performance charts.
 - **Accounts:** Allows secure management of user profile information.
+- **Chat Bot:** Acts as guide and helper for user if help is required
 - **Goals:** Lets users set and track financial goals, with goal cards displaying progress and deadlines.
 
 ---
