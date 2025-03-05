@@ -36,3 +36,41 @@ This project is a comprehensive personal finance management application designed
 
 ## File Structure
 
+
+---
+
+## Templates, Libraries & Open-Source Material
+
+- **Tailwind CSS:**  
+  - Used for rapid, consistent styling.
+  - Documentation: [Tailwind CSS Docs](https://tailwindcss.com/docs)
+
+- **Chart.js:**  
+  - Utilized for interactive charts and visual data representation.
+  - Documentation: [Chart.js Docs](https://www.chartjs.org/docs/latest/)
+
+- **Firebase:**  
+  - Provides user authentication and real-time database functionality.
+  - Documentation: [Firebase Docs](https://firebase.google.com/docs)
+
+- **APIs for Investments:**  
+  - Real-time stock data is fetched using the Twelve Data API (or Alpha Vantage API if configured).
+  - Documentation: [Twelve Data API Docs](https://twelvedata.com/docs) | [Alpha Vantage API Docs](https://www.alphavantage.co/documentation/)
+
+Any open-source libraries used are referenced above, and all source code is original or adapted from standard templates with proper attribution where necessary.
+
+---
+
+## Licensing
+
+This project is licensed under the MIT License. Please refer to the LICENSE file in the repository for the full text of the license.
+
+---
+
+## Additional Documentation
+
+- **Source Code:** All source files are provided in the repository, with inline comments explaining key functions and components.
+- **Templates & Libraries:** Detailed references are provided above to ensure proper attribution and adherence to open-source licensing requirements.
+- **Competitive Event Requirements:** This README, along with the source code and additional documentation, meets the FBLA Coding & Programming competitive event guidelines. The documentation covers all required aspects including functionality, user experience, code quality, and data management.
+
+For further information, please refer to the accompanying documentation in the repository or contact [Your Name] at [your.email@example.com].
