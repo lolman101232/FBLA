@@ -1,0 +1,178 @@
+/* General Styles */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f3f4f6; /* Light gray background */
+    color: #1f2937; /* Dark gray text */
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background-color: #ffffff;
+    padding: 20px;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    left: 0;
+    top: 0;
+    overflow-y: auto;
+}
+
+.sidebar h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin-bottom: 10px;
+}
+
+.sidebar ul li a {
+    color: #2563eb;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    display: block;
+    padding: 8px;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+}
+
+.sidebar ul li a:hover {
+    background-color: #e0e7ff;
+    text-decoration: none;
+}
+
+/* Main Content */
+.container {
+    flex-grow: 1;
+    max-width: 900px;
+    margin: auto;
+    padding: 2rem;
+    margin-left: 270px; /* Prevent overlap with sidebar */
+}
+
+header h1 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+}
+
+/* Account Information & Forms */
+.bg-white {
+    background-color: #ffffff;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+}
+
+h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+p {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+strong {
+    font-weight: 600;
+}
+
+/* Form Styles */
+form label {
+    display: block;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-top: 1rem;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 5px;
+    border: 1px solid #d1d5db;
+    border-radius: 5px;
+    font-size: 1rem;
+    background-color: #ffffff;
+    transition: border-color 0.3s ease;
+}
+
+input:focus {
+    border-color: #2563eb;
+    outline: none;
+}
+
+/* Button Styles */
+button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    margin-top: 1rem;
+}
+
+.bg-blue-500 {
+    background-color: #2563eb;
+    color: white;
+}
+
+.bg-blue-500:hover {
+    background-color: #1d4ed8;
+}
+
+.bg-red-500 {
+    background-color: #dc2626;
+    color: white;
+}
+
+.bg-red-500:hover {
+    background-color: #b91c1c;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 200px;
+    }
+
+    .container {
+        margin-left: 220px;
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 640px) {
+    body {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        box-shadow: none;
+    }
+
+    .container {
+        margin-left: 0;
+        padding: 1rem;
+    }
+}

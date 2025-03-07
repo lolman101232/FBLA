@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Account</title>
-  <link rel="stylesheet" href="dashboard.css">
+  <link rel="stylesheet" href="account.css">
   <script src="https://cdn.tailwindcss.com"></script>
 
   <script type="module">
@@ -82,13 +82,13 @@
 
       try {
         // Update display name
-        if (newName && newName !== user.displayName) {
+        if (newName!== user.displayName) {
           await updateProfile(user, { displayName: newName });
           await update(ref(db, "users/" + user.uid), { full_name: newName });
         }
 
         // Update email
-        if (newEmail && newEmail !== user.email) {
+        if (newEmail  !== user.email) {
           await updateEmail(user, newEmail);
           await update(ref(db, "users/" + user.uid), { email: newEmail });
         }
@@ -124,6 +124,7 @@
         }
       }
     }
+    document.getElementById("editProfileForm").addEventListener("submit", saveProfileChanges);
   </script>
 </head>
 
@@ -172,14 +173,17 @@
         <label for="editPassword">New Password:</label>
         <input type="password" id="editPassword" placeholder="Leave blank to keep current password">
 
-        <button type="submit" class="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600 mt-4">Save Changes</button>
+        <button type="submit" class="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600 mt-4">
+          Save Changes
+        </button>
       </form>
     </div>
 
     <!-- Delete Account -->
     <div class="bg-white shadow rounded p-6">
-      <h2 class="text-xl font-semibold mb-4">Danger Zone</h2>
+      <h2>Remove Account</h2>
       <button onclick="deleteAccount()" class="bg-red-500 text-white rounded px-4 py-2 hover:bg-red-600">Delete Account</button>
+      <p>Warning! Action cannot be undone</p>
     </div>
   </div>
 </body>
