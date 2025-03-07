@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webcam Text Recognition</title>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.0.0-beta.1/dist/tesseract.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f7f7f7;
+            margin: 0;
+        }
+
+        video {
+            border: 2px solid #007BFF;
+            margin-bottom: 20px;
+            width: 80%;
+            max-width: 640px;
+            display: block;
+        }
+
+        canvas {
+            display: none;
+        }
+
+        #captureButton, #retryButton {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        #retryButton {
+            display: none;
+        }
+
+        p {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Webcam Text Recognition</h1>
+    <video id="video" autoplay playsinline></video>
+    <canvas id="canvas"></canvas>
+    <button id="captureButton">Start Capture</button>
+    <button id="retryButton">Retry</button>
+    <p id="output"></p>
+
+    <script src="webcam.js"></script>
+</body>
+</html>

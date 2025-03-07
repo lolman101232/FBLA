@@ -10,24 +10,24 @@
 body {
     display: flex;
     height: 100vh;
-    background: #f5f6fa;
-    color: #333;
+    background: rgba(242,242,255,255); /* Baby Blue */
+    color: hsl(200, 15%, 20%); /* Dark Blue for better text contrast */
 }
 
 /* Sidebar Styles */
 .sidebar {
     width: 250px;
-    background: #fff;
-    border-right: 1px solid #ddd;
+    background: hsl(var(--card));
+    border-right: 1px solid hsl(var(--border));
     padding: 20px;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start ;
 }
 
 .sidebar h2 {
     font-size: 20px;
     font-weight: bold;
+    color: hsl(var(--primary));
     margin-bottom: 20px;
 }
 
@@ -48,172 +48,208 @@ body {
 
 .sidebar ul li a {
     text-decoration: none;
-    color: #555;
+    color: hsl(var(--foreground));
     transition: color 0.3s;
 }
 
 .sidebar ul li a:hover {
-    color: #007BFF;
+    color: hsl(var(--primary));
 }
 
-/* Dashboard Container */
-.dashboard {
-    flex: 1;
-    padding: 20px;
-    overflow-y: auto;
-}
-
-.dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.dashboard-header h1 {
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
-}
-
+/* Button Styles */
 #logoutButton {
     padding: 8px 16px;
-    background: #007BFF;
-    color: #fff;
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
     border: none;
-    border-radius: 20px;
+    border-radius: var(--radius);
     cursor: pointer;
     transition: background-color 0.3s ease;
+    position: relative; /* Keeps it in line with flexbox */
 }
 
-#logoutButton:hover {
-    background-color: #0056b3;
+#logoutButton:hover, .btn:hover {
+    background-color: hsl(var(--ring));
 }
 
 /* Grid Layout for Panels */
 .panel-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    grid-gap: 20px;
+    padding: 70px;
 }
 
+/* Panel Styles */
 .panel {
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: rgb(255, 250, 254);
+    border: 1px solid hsl(var(--border));
+    position: relative ;
+    border-radius: 12px; /* Apply rounded corners here */
+    padding: 40px;
+    box-shadow: 0 6px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Specific Panel Styles */
 .panel h2 {
     font-size: 18px;
     margin-bottom: 10px;
-    color: #555;
+    color: hsl(var(--foreground));
 }
 
-.monthly-spending {
-    color: #e94560;
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    body {
+        background: hsl(var(--background));
+        color: hsl(var(--foreground));
+    }
+    .sidebar {
+        background: hsl(var(--card));
+    }
+    .panel {
+        background: hsl(var(--card));
+    }
 }
 
-.transactions-to-review {
-    list-style: none;
-    padding: 0;
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .panel-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
-.transactions-to-review li {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-}
-
-.transactions-to-review .tag {
-    font-size: 12px;
-    padding: 2px 8px;
-    border-radius: 4px;
-    color: #fff;
-}
-
-.tag.groceries {
-    background: #4caf50;
-}
-
-.tag.subscriptions {
-    background: #007BFF;
-}
-
-/* Chart Container */
-.chart-container {
-    height: 200px;
-}
-
-/* Media Queries */
-@media (max-width: 768px) {
+@media screen and (max-width: 480px) {
     .panel-grid {
         grid-template-columns: 1fr;
     }
+}
 
-    .sidebar {
-        width: 100px;
+/* Main Heading (h1) */
+h1 {
+    font-size: 1.875rem; /* text-3xl */
+    font-weight: 700; /* font-bold */
+    margin-bottom: 0.5rem; /* mb-2 */
+  }
+  
+  /* Subheading / Description (p) */
+  p {
+    font-size: 1rem; /* text-base */
+    color: hsl(var(--foreground)); /* text-slate-600 for light, text-slate-400 for dark */
+    margin-bottom: 2rem; /* mb-8 */
+  }
+  
+  /* Card Titles */
+  .card-title {
+    font-size: 1.25rem; /* text-2xl */
+    font-weight: 700; /* font-bold */
+    margin-bottom: 0.25rem; /* mb-1 */
+  }
+  
+  /* Small Text (labels) */
+  .text-small {
+    font-size: 0.875rem; /* text-sm */
+    font-weight: 500; /* font-medium */
+    color: hsl(var(--foreground)); /* text-slate-500 for light, text-slate-400 for dark */
+    margin-bottom: 0.25rem; /* mb-1 */
+  }
+  
+  /* Small Text (value changes) */
+  .text-small-change {
+    font-size: 0.875rem; /* text-sm */
+    font-weight: 500; /* font-medium */
+    color: hsl(var(--foreground)); /* text-slate-600 for light, text-slate-300 for dark */
+  }
+  
+  /* Button Text */
+  button {
+    font-size: 0.875rem; /* text-sm */
+    font-weight: 600; /* font-medium */
+    letter-spacing: 0.05em; /* Optional, for subtle emphasis */
+  }
+  
+  /* Uppercase Text for Emphasis */
+  .uppercase {
+    text-transform: uppercase;
+    letter-spacing: 0.1em; /* tracking-wider */
+  }
+  .dashboard {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border-radius: 10px;
+    width: 100%; /* Ensure it fills the width */
+    flex-grow: .1; /* Allows the dashboard to grow and fill space */
+    position: relative; /* Relative position for absolute elements inside */
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between; /* Pushes h1 to the left and button to the right */
+    align-items: center; /* Keeps elements aligned properly */
+    margin-bottom: 20px;
+    width: 100%;
+    padding: 10px 20px; /* Adds spacing for a better look */
+}
+
+.dashboard-header h1 {
+    font-size: 1.875rem; /* text-3xl */
+    font-weight: 700;
+    margin: 0;
+    flex-grow: 1; /* Allows h1 to take available space */
+    text-align: center; /* Ensures text is centered */
+}
+/* Additional styles for expanding space as needed */
+@media screen and (min-width: 768px) {
+    .dashboard {
+        margin-right: 20px; /* Adds some spacing to the right */
     }
 }
-
-.popup {
-    width: 800px;
-    height: 250px;
-    background: #fff;
-    border-radius: 10px;
+div {
+    position: relative; /* Ensure the parent div allows absolute positioning */
+}
+#markAsFinished {
     position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.1);
-    text-align: center;
-    padding: 0 30px 30px;
-    color: #333;
-    visibility: hidden;
-    transition: transform 0.3s ease;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-
-}
-.open-popup {
-    top: 50%;
-    visibility: visible;
-    transform: translate(-50%, -50%) scale(1);
-}
-.popup h2 {
-    font-size: 38px;
-    font-family: 'Arial', sans-serif; /* Use a professional, modern font */
-    font-weight: bold; /* Make text bold */
-    margin-bottom: 20px;
-    margin: 30px 0 10px;
-}
-.popup button{
-
-    padding: 8px 16px;
-    background: #007BFF;
-    color: #fff;
+    bottom: 10px;  /* Pushes button to the bottom */
+    right: 10px;   /* Pushes button to the right */
+    padding: 8px 12px;
+    font-size: 0.875rem; /* text-sm */
+    font-weight: 600;
+    background-color: #d1c4e9; /* Light purple */
+    color: #4a148c; /* Darker purple text */
     border: none;
-    border-radius: 10px;
+    border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-top: 20px;
 }
 
-/* Close button (X) positioned at top-right */
-.popup button.close-btn {
-    position: absolute;
-    top: 0px;
-    right: 20px;
-    background: red;
-    color: white;
-    border: none;
-    font-size: 16px;
+.checkbox-container {
+    display: flex;
+    align-items: flex-start; /* Aligns the checkbox and text */
+    gap: 10px; /* Space between checkbox and text */
+    margin-bottom: 12px;
+    color: #374151;
+}
+
+.review-content {
+    display: flex;
+    flex-direction: column; /* Ensures description is below label */
+}
+
+.checkbox-label {
+    font-size: 0.875rem; /* text-sm */
+    font-weight: 600; /* font-medium */
+    color: #374151; /* Tailwind's text-gray-700 */
+}
+
+.checkbox-description {
+    font-size: 0.75rem; /* text-xs */
+    color: #6b7280; /* Tailwind's text-gray-500 */
+    margin-top: 2px; /* Adds slight spacing */
+}
+
+
+#nothingToReview {
+    font-size: 1rem;
     font-weight: bold;
-    padding: 0px 30px;
-    border-radius: 12%;
-    cursor: pointer;
-}
-
-.popup button.close-btn:hover {
-    background: darkred;
+    color: #374151; /* Tailwind's text-gray-700 */
+    text-align: center;
+    padding: 10px;
 }

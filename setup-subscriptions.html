@@ -20,10 +20,7 @@
             <div class="icon">&#x1F4BC;</div>
             <span>Income</span>
           </div>
-          <div class="step completed">
-            <div class="icon">&#x1F4B3;</div>
-            <span>Expenses</span>
-          </div>
+
           <div class="step completed">
             <div class="icon" style="background: #4caf50; color: #fff;">&#x1F4C8;</div>
             <span>Subscriptions</span>
@@ -52,10 +49,46 @@
         </div>
       </div>
       <footer class="card-footer">
-        <p><a href="setup-expenses.html" class="btn outline">Back</a></p>
-        <p><a href="setup-savings.html" class="btn primary">Next</a></p>
+        <p><a href="setup.html" class="btn outline">Back</a></p>
+        <p><a id="saveAndContinue" class="btn primary">Next</a></p>
       </footer>
     </div>
   </div>
+  <script type="module">
+    import { auth, database } from './firebase-config.js'; // Import Firebase config
+    import { ref, set } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+    document.getElementById("saveAndContinue").addEventListener("click", async () => {
+      const user = auth.currentUser;
+
+      if (user) {
+        const streaming = document.getElementById("streaming").value;
+        const gym = document.getElementById("gym").value;
+        const software = document.getElementById("software").value;
+        const otherSubscriptions = document.getElementById("otherSubscriptions").value;
+
+        if (!streaming || !gym || !software || !otherSubscriptions) {
+          alert("Please complete all fields.");
+          return;
+        }
+
+        const userData = {
+          streaming: streaming,
+          gym: gym,
+          software: software,
+          otherSubscriptions: otherSubscriptions
+        };
+
+        // Save data to Firebase
+        const userRef = ref(database, "users/" + user.uid + "/financialSetup/subscriptions");
+        await set(userRef, userData);
+
+        window.location.href = "setup-savings.html"; // Navigate to the next step
+      } else {
+        alert("No authenticated user. Please log in.");
+        window.location.href = "login.html";
+      }
+    });
+  </script>
 </body>
 </html>

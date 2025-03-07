@@ -5,234 +5,114 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Finance Dashboard</title>
         <link rel="stylesheet" href="dashboard.css">
-        
-        <!-- Load Chart.js -->
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <!-- If moment.js is used -->
     </head>
 <body>
     <aside class="sidebar">
-        <h2>My Accounts</h2>
+        <h2 class="font-bold text-3xl mb-2">Spark Finance</h2>
         <ul>
-            <li><a href="setup.html">Get Started!</a></li>
-            <li><a href="homepage.html">Dashboard</a></li>
-            <li><a href="transaction.html">Transactions</a></li>
-            <li><a href="#">Cash Flow</a></li>
-            <li><a href="#">Accounts</a></li>
-            <li><a href="investment.html">Investments</a></li>
-            <li><a href="#">Categories</a></li>
+            <li><a href="setup.html" class="text-base font-medium">Get Started!</a></li>
+            <li><a href="homepage.html" class="text-base font-medium">Dashboard</a></li>
+            <li><a href="transaction.html" class="text-base font-medium">Transactions</a></li>
+            <li><a href="investment.html" class="text-base font-medium">Investments</a></li>
         </ul>
     </aside>
 
     <section class="dashboard">
         <header class="dashboard-header">
-            <h1>Welcome, <span id="userName">User</span></h1>
-            <button id="logoutButton" class="btn primary">Logout</button>
+            <h1 class="text-3xl font-bold mb-2">Welcome, <span id="userName" class="text-3xl font-bold">User</span></h1>
+            <button id="logoutButton" class="btn primary text-sm font-medium uppercase tracking-wider">Logout</button>
         </header>
 
         <div class="panel-grid">
             <div class="panel">
-                <h2>Monthly Spending</h2>
-                <p class="monthly-spending">$522 over budget</p>
+                <h2 class="text-2xl font-bold mb-1">Monthly Spending</h2>
+                <p class="monthly-spending text-base font-medium"> $0 over budget</p>
                 <canvas id="spendingChart"></canvas>
             </div>
+
             <div class="panel">
-                <h2>K-Means Clustering</h2>
-                <div class="chart-container">
-                    <canvas id="clusterChart"></canvas>
-                </div>
+                <h2 class="text-2xl font-bold mb-1">Top Categories</h2>
+                <canvas id="categoriesChart"></canvas>
+            </div>
+            <div class="panel">
+                <h2 class="text-2xl font-bold mb-1">Spending Analysis</h2>
+                <canvas id="clusterChart"></canvas>
+            </div>
+            <div class="panel">
+                <h2 class="text-2xl font-bold mb-1">Recurring Subscriptions</h2>
+                <canvas id="recurringChart"></canvas>
             </div>
             
+            <div class="panel">
+                <h2 class="text-2xl font-bold mb-1">Profit/Loss</h2>
+                <canvas id="profitlossChart"></canvas>
+            </div>
             <div class="grid grid-cols-2 gap-4 p-6">
                 <div class="panel">
-                    <h2>Transactions to Review</h2>
-                    <ul class="transactions-to-review">
-                        <li>Loading transactions...</li>
-                    </ul>
-                </div>
+                    <h2 class="text-2xl font-bold mb-1">Transactions to Review</h2>
+                    <div class="checkbox-group" id="reviewContainer">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="review1" checked>
+                            <span class="checkmark"></span>
+                            <div class="review-content">
+                                <div class="checkbox-label text-sm font-medium">Placeholder Label 1</div>
+                                <div class="checkbox-description text-sm text-slate-500">Placeholder description 1</div>
+                            </div>
+                        </label>
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="review2">
+                            <span class="checkmark"></span>
+                            <div class="review-content">
+                                <div class="checkbox-label text-sm font-medium">Placeholder Label 2</div>
+                                <div class="checkbox-description text-sm text-slate-500">Placeholder description 2</div>
+                            </div>
+                            
+                        </label>
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="review2">
+                            <span class="checkmark"></span>
+                            <div class="review-content">
+                                <div class="checkbox-label text-sm font-medium">Placeholder Label 2</div>
+                                <div class="checkbox-description text-sm text-slate-500">Placeholder description 2</div>
+                            </div>
+                            
+                        </label>
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="review2">
+                            <span class="checkmark"></span>
+                            <div class="review-content">
+                                <div class="checkbox-label text-sm font-medium">Placeholder Label 2</div>
+                                <div class="checkbox-description text-sm text-slate-500">Placeholder description 2</div>
+                            </div>
+                            
+                        </label>
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="review2">
+                            <span class="checkmark"></span>
+                            <div class="review-content">
+                                <div class="checkbox-label text-sm font-medium">Placeholder Label 2</div>
+                                <div class="checkbox-description text-sm text-slate-500">Placeholder description 2</div>
+                            </div>
+                            
+                        </label>
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="review2">
+                            <span class="checkmark"></span>
+                            <div class="review-content">
+                                <div class="checkbox-label text-sm font-medium">Placeholder Label 2</div>
+                                <div class="checkbox-description text-sm text-slate-500">Placeholder description 2</div>
+                            </div>
+                        </label>
 
-                <div class="panel">
-                    <h2>Top Categories</h2>
-                    <div class="chart-container">
-                        <canvas id="categoriesChart"></canvas>
                     </div>
-                </div>
+                    <button id="markAsFinished">Reviewed</button>
 
-                <div class="panel">
-                    <h2>Profit/Loss</h2>
-                    <div class="chart-container">
-                        <canvas id="profitlossChart"></canvas>
-                    </div>
                 </div>
             </div>
         </div>
     </section>
+    <script src="homepage.js" type="module"></script>
 
-    <script type="module">
-        import { auth, database } from './firebase-config.js';
-        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-        import { get, ref } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
-        import { analyzeTransactions, kMeansCluster } from './jdataAnalyze.js';
-
-        const userNameElement = document.getElementById("userName");
-        const monthlySpendingElement = document.querySelector(".monthly-spending");
-        const spendingChartCanvas = document.getElementById("spendingChart");
-        const categoriesChartCanvas = document.getElementById("categoriesChart");
-        const profitlossChartCanvas = document.getElementById("profitlossChart");
-        const transactionsToReviewList = document.querySelector(".transactions-to-review");
-        const clusterChartCanvas = document.getElementById("clusterChart");
-
-        // Sample data for K-Means clustering
-        const data = [
-            [1000, 27878],
-            [16546545, 15646548],
-            [5, 8],
-            [8, 8],
-            [1000, 0.6],
-            [9, 11]
-        ];
-
-        // Perform K-Means clustering
-        const result = kMeansCluster(data, 2);
-        console.log("K-Means Clustering Result:", result);
-
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                console.log('Authenticated user:', user); // Logs the authenticated user object
-
-                const userRef = ref(database, "users/" + user.uid);
-                const snapshot = await get(userRef);
-
-                if (snapshot.exists()) {
-                    const userData = snapshot.val();
-                    console.log('User data from database:', userData); // Logs user data retrieved from database
-
-                    userNameElement.textContent = userData.full_name.split(" ")[0];
-                    monthlySpendingElement.textContent = `$${userData.monthlySpending} over budget`;
-
-                    transactionsToReviewList.innerHTML = (userData.transactions || []).length > 0
-                        ? userData.transactions.map(transaction => `<li>${transaction.name} <span class="tag ${transaction.category.toLowerCase()}">${transaction.category}</span></li>`).join('')
-                        : "<li>No transactions to review</li>";
-
-                    new Chart(spendingChartCanvas.getContext("2d"), {
-                        type: "line",
-                        data: {
-                            labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
-                            datasets: [{
-                                label: "Spending",
-                                data: userData.spendingData || [0, 0, 0, 0],
-                                borderColor: "#e94560",
-                                fill: false,
-                            }],
-                        },
-                    });
-
-                    new Chart(categoriesChartCanvas.getContext("2d"), {
-                        type: "doughnut",
-                        data: {
-                            labels: ["Home", "Food", "Car"],
-                            datasets: [{
-                                data: userData.categoriesData || [0, 0, 0],
-                                backgroundColor: ["#4caf50", "#007BFF", "#e94560"],
-                            }],
-                        },
-                    });
-
-                    const profitLossData = analyzeTransactions(userData.transactions || []);
-                    console.log("Profit/Loss Data:", profitLossData);
-
-                    new Chart(profitlossChartCanvas.getContext("2d"), {
-                        type: "bar",
-                        data: {
-                            labels: ["Profit", "Loss"], // Individual labels for bars
-                            datasets: [{
-                                label: "Profit",
-                                data: [profitLossData["Profit vs Loss"][0], 0], // Profit value in first bar, 0 in second
-                                backgroundColor: "#4caf50"
-                            },
-                            {
-                                label: "Loss",
-                                data: [0, profitLossData["Profit vs Loss"][1]], // 0 in first bar, Loss value in second
-                                backgroundColor: "#e94560"
-                            }]
-                        },
-                    });
-
-                    const clusterColors = ['#4caf50', '#007BFF']; // Colors for different clusters
-                    const clusterLabels = ['Cluster 1', 'Cluster 2']; // Labels for clusters
-
-                    const dataPoints = data.map((point, i) => ({
-                        x: point[0], // x-coordinate (e.g., income)
-                        y: point[1], // y-coordinate (e.g., expense)
-                        backgroundColor: clusterColors[result[i]], // Color based on cluster
-                        label: `Point ${i + 1}` // Optional label for each data point (e.g., Point 1, Point 2, etc.)
-                    }));
-
-                    // Create a new chart
-                    new Chart(clusterChartCanvas.getContext("2d"), {
-                        type: "scatter",
-                        data: {
-                            datasets: [
-                                {
-                                    label: clusterLabels[0], // Set Cluster 1 label for the first dataset
-                                    data: dataPoints.filter((_, i) => result[i] === 0), // Points in Cluster 1
-                                    backgroundColor: '#4caf50', // Color for Cluster 1
-                                    borderColor: '#000',
-                                    borderWidth: 1,
-                                    radius: 5,
-                                },
-                                {
-                                    label: clusterLabels[1], // Set Cluster 2 label for the second dataset
-                                    data: dataPoints.filter((_, i) => result[i] === 1), // Points in Cluster 2
-                                    backgroundColor: '#007BFF', // Color for Cluster 2
-                                    borderColor: '#000',
-                                    borderWidth: 1,
-                                    radius: 5,
-                                }
-                            ]
-                        },
-                        options: {
-                            responsive: true,
-                            plugins: {
-                                legend: {
-                                    position: 'top', // Position the legend at the top of the chart
-                                }
-                            },
-                            scales: {
-                                x: {
-                                    title: {
-                                        display: true,
-                                        text: 'Income', // x-axis label
-                                    }
-                                },
-                                y: {
-                                    title: {
-                                        display: true,
-                                        text: 'Expense', // y-axis label
-                                    }
-                                }
-                            }
-                        }
-                    });
-
-                    document.getElementById("logoutButton").addEventListener("click", function() {
-                        window.location.href = "login.html"; // Redirect to login page
-                    });
-
-                } else {
-                    console.error("No user data found in the database.");
-                }
-                const transactions = userData.transactions || [];
-                if (transactions.length === 0) {
-                    console.warn("No transactions found for this user.");
-                } else {
-                    console.log("Transactions found:", transactions);
-                }
-            } else {
-                console.log('No authenticated user');
-                window.location.href = "login.html"; // Redirect to login if no user is authenticated
-            }
-        });
-    </script>
 </body>
 </html>

@@ -7,40 +7,35 @@
   <link rel="stylesheet" href="manual.css">
   <style>
     /* Basic styling for tab buttons */
+
     .tab-buttons {
       display: flex;
       margin-bottom: 1rem;
-      border-bottom: 2px solid #ccc;
+      border-bottom: 2px solid #79c456;
     }
     .tab-buttons button {
-      background: none;
+      background-color: #f0f0f0; /* Default background color for both buttons */
+      color: #333; /* Default text color */
       border: none;
       padding: 10px 20px;
       cursor: pointer;
-      font-size: 1rem;
+      margin-right: 10px;
     }
+
     .tab-buttons button.active {
-      border-bottom: 2px solid #333;
-      font-weight: bold;
+      background-color: #79c456; /* Color for the active button */
+      color: white; /* Text color for the active button */
     }
+
+    .tab-buttons button:hover {
+      background-color: #c3ffb6; /* Color when hovering over the button */
+    }
+
     .tab-content {
       display: none;
     }
     .tab-content.active {
       display: block;
-    }
-    /* Popup container styling */
-    #popupContainer {
-      visibility: hidden;
-      transform: translate(-50%, -50%) scale(0.1);
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      background: white;
-      padding: 20px;
-      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-      border-radius: 10px;
-      z-index: 100;
     }
   </style>
 </head>
@@ -49,8 +44,8 @@
   
   <!-- Tab Navigation -->
   <div class="tab-buttons">
-    <button id="addTabBtn" class="active">Add Transaction</button>
-    <button id="editTabBtn">Edit Transaction</button>
+    <button id="addTabBtn" class="active">Transaction Details</button>
+    <button id="editTabBtn">Search Transaction</button>
   </div>
 
   <!-- Add Transaction Tab -->
@@ -73,19 +68,31 @@
         <option value="">-- Select Category --</option>
         <option value="subscription">Subscription</option>
         <option value="one-time">One-Time Purchase</option>
+        <option value="deposit">Deposit</option>
       </select>
 
-      <!-- One-Time Purchase Description: hidden by default -->
+      <!-- One-Time Purchase Category Dropdown -->
       <div id="oneTimeDetails" style="display: none;">
-        <label for="oneTimeDescription">Describe the purchase:</label>
-        <input type="text" id="oneTimeDescription" name="oneTimeDescription" placeholder="Enter purchase details">
+        <label for="oneTimeCategory">Select Purchase Category:</label>
+        <select id="oneTimeCategory" name="oneTimeCategory">
+          <option value="blank">Select One</option>
+          <option value="utilities">Utilities</option>
+          <option value="grocery">Grocery</option>
+          <option value="clothing">Clothing</option>
+          <option value="food">Food</option>
+          <option value="entertainment">Entertainment</option>
+          <option value="transportation">Transportation</option>
+          <option value="medical">Medical</option>
+          <option value="education">Education</option>
+          <option value="personal">Personal</option>
+          <option value="other">Other</option>
+
+        </select>
       </div>
 
-      <!-- Security PIN field inserted in the form -->
       <label for="pinAdd">Security PIN:</label>
       <input type="password" id="pinAdd" name="pinAdd" required>
 
-      <!-- Submit Transaction Button -->
       <button type="submit" id="submitTransactionBtn">Submit Transaction</button>
     </form>
   </div>
@@ -96,86 +103,96 @@
       <label for="editDate">Select Transaction Date to Edit (YYYY-MM-DD):</label>
       <input type="date" id="editDate" name="editDate" required>
       
-      <!-- Security PIN field for editing -->
       <label for="pinEdit">Security PIN:</label>
       <input type="password" id="pinEdit" name="pinEdit" required>
       
       <button type="button" id="loadTransactionBtn">Load Transaction</button>
     </form>
-    <!-- For simplicity, editing functionality is represented by an alert -->
   </div>
 
   <!-- Firebase and Application Code -->
   <script type="module">
-    // Import Firebase modules from the CDN.
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js";
+    import { getDatabase, ref, set, child, get, update, push } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-database.js";
 
-    // Firebase configuration – replace with your own project's config
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyAUJPviTJaAcoMoP6wPn_LCUam7JoQROTY",
+      authDomain: "fbla-9824b.firebaseapp.com",
+      databaseURL: "https://fbla-9824b-default-rtdb.firebaseio.com",
+      projectId: "fbla-9824b",
+      storageBucket: "fbla-9824b.firebasestorage.app",
+      messagingSenderId: "158608304412",
+      appId: "1:158608304412:web:4d47e398d859429ae472d9",
+      measurementId: "G-J87WWW4MQV"
     };
 
-    // Initialize Firebase and Firestore
     const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+    let editTransactionKey = null;
 
-    // Simple PIN check function. Replace "1234" with your secure PIN logic.
     function isPinValid(pin) {
-      const validPin = "1234";
-      return pin === validPin;
+      return pin === "1234";
     }
 
-    // Handle Add Transaction Form Submission
-    const addTransactionForm = document.getElementById("addTransactionForm");
-    addTransactionForm.addEventListener("submit", async (e) => {
+    document.getElementById("addTransactionForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-
-      // Gather form values
+      
       const date = document.getElementById("date").value;
       const transactionType = document.getElementById("transactionType").value;
       const amount = parseFloat(document.getElementById("amount").value);
       const category = document.getElementById("category").value;
-      const oneTimeDescription = document.getElementById("oneTimeDescription").value || "";
       const pin = document.getElementById("pinAdd").value.trim();
 
-      // Check the PIN
       if (!isPinValid(pin)) {
         alert("Incorrect PIN ❌");
         return;
       }
 
-      // Create a transaction object. Adjust the structure as needed.
+      const user = auth.currentUser;
+      if (!user) {
+        alert("You must be logged in to save transactions.");
+        return;
+      }
+
+      const userId = user.uid;
+      const oneTimeCategoryDropdown = document.getElementById("oneTimeCategory"); // Use the correct ID
+      let oneTimeCategory = "Not Applicable"; // Default to Not Applicable
+      if (category === "one-time" || category === "subscription") {
+        oneTimeCategory = oneTimeCategoryDropdown.value !== "blank" ? oneTimeCategoryDropdown.value : "Not Provided";
+      } else if (category === "subscription") {
+        oneTimeCategory = "Not Provided";
+      };
       const transactionData = {
-        date, // stored in YYYY-MM-DD format
+        date,
         transactionType,
         amount,
         category,
-        type: category, // using category field for filtering (subscription or one-time)
-        oneTimeDescription: category === "one-time" ? oneTimeDescription : ""
+        oneTimeCategory: (category === "one-time" || category === "subscription") ? oneTimeCategory : "Not Applicable",
       };
 
       try {
-        // Save transaction data to Firebase Firestore (collection: "transactions")
-        await addDoc(collection(db, "transactions"), transactionData);
-        alert("Transaction saved successfully ✅");
-        addTransactionForm.reset();
-        // Optionally, hide the one-time details section after resetting
+        if (editTransactionKey) {
+          const transactionRef = ref(db, `users/${userId}/transactions-manual/${editTransactionKey}`);
+          await update(transactionRef, transactionData);
+          alert("Transaction updated successfully ✅");
+          editTransactionKey = null;
+        } else {
+          const transactionsRef = ref(db, `users/${userId}/transactions-manual`);
+          await set(push(transactionsRef), transactionData);
+          alert("Transaction saved successfully ✅");
+        }
+
+        document.getElementById("addTransactionForm").reset();
         document.getElementById("oneTimeDetails").style.display = "none";
       } catch (error) {
-        console.error("Error adding document: ", error);
+        console.error("Error saving transaction:", error);
         alert("Failed to save transaction ❌");
       }
     });
 
-    // Handle Edit Transaction (Example: Load transaction for a given date)
-    const loadTransactionBtn = document.getElementById("loadTransactionBtn");
-    loadTransactionBtn.addEventListener("click", async () => {
+    document.getElementById("loadTransactionBtn").addEventListener("click", async () => {
       const editDate = document.getElementById("editDate").value;
       const pinEdit = document.getElementById("pinEdit").value.trim();
 
@@ -190,55 +207,103 @@
       }
 
       try {
-        // Example query: fetch transactions for the given date
-        const q = query(collection(db, "transactions"), where("date", "==", editDate));
-        const querySnapshot = await getDocs(q);
+        const user = auth.currentUser;
+        if (!user) {
+          alert("You must be logged in to edit transactions.");
+          window.location.href = "login.html";
+          return;
+        }
 
-        if (querySnapshot.empty) {
-          alert("No transactions found for the selected date.");
-        } else {
-          querySnapshot.forEach((doc) => {
-            // For demonstration, we'll simply alert the document data.
-            // In a real app, populate the form fields for editing.
-            alert("Loaded transaction: " + JSON.stringify(doc.data()));
+        const userId = user.uid;
+        const transactionsRef = ref(db, `users/${userId}/transactions-manual`);
+        const snapshot = await get(transactionsRef);
+
+        if (snapshot.exists()) {
+          let transactions = [];
+          snapshot.forEach((childSnapshot) => {
+            const transaction = { id: childSnapshot.key, ...childSnapshot.val() };
+            if (transaction.date === editDate) {
+              transactions.push(transaction);
+            }
           });
+
+          if (transactions.length === 0) {
+            alert("No transactions found for the selected date.");
+            return;
+          }
+
+          // Create a dropdown to select the transaction
+          let transactionDropdown = document.getElementById("transactionSelect");
+          if (!transactionDropdown) {
+            transactionDropdown = document.createElement("select");
+            transactionDropdown.id = "transactionSelect";
+            document.getElementById("editTransactionForm").appendChild(transactionDropdown);
+          }
+
+          transactionDropdown.innerHTML = ""; // Clear previous options
+          transactions.forEach((transaction, index) => {
+            const option = document.createElement("option");
+            option.value = transaction.id;
+            option.textContent = `Transaction ${index + 1}: $${transaction.amount} (${transaction.category})`;
+            transactionDropdown.appendChild(option);
+          });
+
+          // Automatically load the first transaction into the form
+          loadTransactionIntoForm(transactions[0]);
+
+          // Listen for changes in the dropdown to update the form fields
+          transactionDropdown.addEventListener("change", function () {
+            const selectedTransaction = transactions.find(t => t.id === this.value);
+            if (selectedTransaction) {
+              loadTransactionIntoForm(selectedTransaction);
+            }
+          });
+
+        } else {
+          alert("No transactions available.");
         }
       } catch (error) {
-        console.error("Error fetching document: ", error);
+        console.error("Error fetching transactions:", error);
         alert("Failed to load transaction ❌");
       }
     });
 
-    // Show/hide one-time purchase details based on category selection.
-    const categorySelect = document.getElementById("category");
-    const oneTimeDetails = document.getElementById("oneTimeDetails");
-    categorySelect.addEventListener("change", function() {
-      if (categorySelect.value === "one-time") {
-        oneTimeDetails.style.display = "block";
+    // Function to load a transaction into the form
+    function loadTransactionIntoForm(transaction) {
+      document.getElementById("amount").value = transaction.amount;
+      document.getElementById("transactionType").value = transaction.transactionType;
+      document.getElementById("category").value = transaction.category;
+      if (transaction.category === "one-time" || transaction.category === "subscription") {
+        document.getElementById("oneTimeDetails").style.display = "block";
+        document.getElementById("oneTimeCategory").value = transaction.oneTimeCategory || "Not Provided";
       } else {
-        oneTimeDetails.style.display = "none";
+        document.getElementById("oneTimeDetails").style.display = "none";
       }
+      document.getElementById("submitTransactionBtn").dataset.transactionId = transaction.id; // Store the transaction ID for updates
+    }
+
+    document.getElementById("category").addEventListener("change", function() {
+    if (this.value === "one-time" || this.value === "subscription") {
+      document.getElementById("oneTimeDetails").style.display = "block";
+    } else {
+      document.getElementById("oneTimeDetails").style.display = "none";
+    }
+  });
+
+    document.getElementById("addTabBtn").addEventListener("click", () => {
+      document.getElementById("addTransactionTab").classList.add("active");
+      document.getElementById("editTransactionTab").classList.remove("active");
+      document.getElementById("addTabBtn").classList.add("active");
+      document.getElementById("editTabBtn").classList.remove("active");
     });
 
-    // Tab switching functionality
-    const addTabBtn = document.getElementById("addTabBtn");
-    const editTabBtn = document.getElementById("editTabBtn");
-    const addTransactionTab = document.getElementById("addTransactionTab");
-    const editTransactionTab = document.getElementById("editTransactionTab");
-
-    addTabBtn.addEventListener("click", function() {
-      addTabBtn.classList.add("active");
-      editTabBtn.classList.remove("active");
-      addTransactionTab.classList.add("active");
-      editTransactionTab.classList.remove("active");
+    document.getElementById("editTabBtn").addEventListener("click", () => {
+      document.getElementById("editTransactionTab").classList.add("active");
+      document.getElementById("addTransactionTab").classList.remove("active");
+      document.getElementById("editTabBtn").classList.add("active");
+      document.getElementById("addTabBtn").classList.remove("active");
     });
 
-    editTabBtn.addEventListener("click", function() {
-      editTabBtn.classList.add("active");
-      addTabBtn.classList.remove("active");
-      editTransactionTab.classList.add("active");
-      addTransactionTab.classList.remove("active");
-    });
   </script>
-</body>
-</html>
+  </body>
+  </html>
