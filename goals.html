@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Financial Goals</title>
+  <link rel="stylesheet" href="dashboard.css">
+  <style>
+    /* Layout for panels */
+    .panel-grid {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 20px;
+      align-items: flex-start;
+      overflow-x: auto;
+      padding: 20px;
+    }
+
+    .panel {
+      min-width: 300px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    /* Goal Cards */
+    .goal-card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .goal-card h3 {
+      margin: 0 0 10px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      background: #e9ecef;
+      border-radius: 5px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+
+    .goalPanel {
+    min-width: 220px;  /* Smaller minimum width */
+    max-width: 250px;  /* Limit maximum width */
+    padding: 12px;     /* Adjust inner spacing */
+    }
+
+    .progress-bar div {
+      height: 10px;
+      background: #4caf50;
+    }
+
+    /* Goal Form */
+    .goal-form input,
+    .goal-form button {
+      width: 100%;
+      margin: 5px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    .goal-form button {
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+      width: 85%;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar">
+    <h2>My Accounts</h2>
+    <ul>
+      <li><a href="homepage.html">Dashboard</a></li>
+      <li><a href="transaction.html">Transactions</a></li>
+      <li><a href="goals.html">Goals</a></li>
+      <li><a href="investment.html">Investments</a></li>
+      <li><a href="account.html">Account</a></li>
+    </ul>
+  </aside>
+
+  <section class="dashboard">
+    <header class="dashboard-header">
+      <h1>Financial Goals</h1>
+    </header>
+
+    <div class="panel-grid">
+      <!-- Panel 1: Set a New Goal -->
+      <div class="panel">
+        <h2>Set a New Goal</h2>
+        <form id="goalForm" class="goal-form">
+          <label for="goalName">Goal Name:</label>
+          <input type="text" id="goalName" placeholder="Goal Name" required>
+          
+          <label for="goalAmount">Target Amount ($):</label>
+          <input type="number" id="goalAmount" placeholder="Target Amount ($)" required>
+          
+          <label for="goalDeadline">Deadline:</label>
+          <input type="date" id="goalDeadline" required>
+          
+          <button type="submit" class="btn primary">Add Goal</button>
+        </form>
+      </div>
+
+      <!-- Goal Progress Cards (each in its own panel) -->
+      <div id="goalPanels"></div>
+    </div>
+  </section>
+
+  <script>
+    const goals = [
+      { name: "Emergency Fund", target: 1000, saved: 400, deadline: "2025-06-01" },
+      { name: "New Laptop", target: 1500, saved: 900, deadline: "2025-12-01" }
+    ];
+
+    function renderGoalPanels() {
+      const container = document.getElementById("goalPanels");
+      container.innerHTML = "";
+      goals.forEach(goal => {
+        const progress = (goal.saved / goal.target) * 100;
+        const panel = document.createElement("div");
+        panel.classList.add("panel");
+        panel.innerHTML = `
+          <div class="goal-card">
+            <h3>${goal.name}</h3>
+            <p>Target: $${goal.target}</p>
+            <div class="progress-bar"><div style="width: ${progress}%;"></div></div>
+            <p>Saved: $${goal.saved} | To Go: $${goal.target - goal.saved}</p>
+            <p>Deadline: ${goal.deadline}</p>
+          </div>
+        `;
+        container.appendChild(panel);
+      });
+    }
+
+    document.getElementById("goalForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+      const name = document.getElementById("goalName").value;
+      const target = parseFloat(document.getElementById("goalAmount").value);
+      const deadline = document.getElementById("goalDeadline").value;
+      if (name && target && deadline) {
+        goals.push({ name, target, saved: 0, deadline });
+        renderGoalPanels();
+        document.getElementById("goalForm").reset();
+      }
+    });
+
+    renderGoalPanels();
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Account</title>
+  <link rel="stylesheet" href="dashboard.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script type="module">
+    // Import Firebase modules
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
+    import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-database.js";
+    import { getAuth, onAuthStateChanged, updateProfile, updateEmail, updatePassword, deleteUser } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAUJPviTJaAcoMoP6wPn_LCUam7JoQROTY",
+      authDomain: "fbla-9824b.firebaseapp.com",
+      databaseURL: "https://fbla-9824b-default-rtdb.firebaseio.com",
+      projectId: "fbla-9824b",
+      storageBucket: "fbla-9824b.appspot.com",
+      messagingSenderId: "158608304412",
+      appId: "1:158608304412:web:4d47e398d859429ae472d9",
+      measurementId: "G-J87WWW4MQV"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+
+    // Check authentication and load user data
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        loadAccountInfo(user);
+      } else {
+        console.log("No authenticated user found.");
+      }
+    });
+
+    // Fetch user data and display it
+    async function loadAccountInfo(user) {
+      try {
+        const userRef = ref(db, "users/" + user.uid);
+        const snapshot = await get(userRef);
+
+        if (snapshot.exists()) {
+          const userData = snapshot.val();
+          displayAccountInfo(user, userData);
+        } else {
+          console.error("No user data found in the database.");
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    }
+
+    // Display account information
+    function displayAccountInfo(user, data) {
+      document.getElementById("displayEmail").textContent = user.email;
+      document.getElementById("displayName").textContent = data.full_name || "N/A";
+      document.getElementById("displayPhone").textContent = data.phone || "N/A";
+      document.getElementById("displayCreation").textContent = data.created_at || "N/A";
+
+      // Pre-fill edit form
+      document.getElementById("editName").value = data.full_name || "";
+      document.getElementById("editEmail").value = user.email;
+      document.getElementById("editPhone").value = data.phone || "";
+    }
+
+    // Save profile changes
+    async function saveProfileChanges(e) {
+      e.preventDefault();
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const newName = document.getElementById("editName").value;
+      const newEmail = document.getElementById("editEmail").value;
+      const newPhone = document.getElementById("editPhone").value;
+      const newPassword = document.getElementById("editPassword").value;
+
+      try {
+        // Update display name
+        if (newName && newName !== user.displayName) {
+          await updateProfile(user, { displayName: newName });
+          await update(ref(db, "users/" + user.uid), { full_name: newName });
+        }
+
+        // Update email
+        if (newEmail && newEmail !== user.email) {
+          await updateEmail(user, newEmail);
+          await update(ref(db, "users/" + user.uid), { email: newEmail });
+        }
+
+        // Update password
+        if (newPassword) {
+          await updatePassword(user, newPassword);
+        }
+
+        // Update phone
+        await update(ref(db, "users/" + user.uid), { phone: newPhone });
+
+        alert("Profile updated successfully!");
+      } catch (error) {
+        console.error("Error updating profile:", error);
+        alert("Error updating profile: " + error.message);
+      }
+    }
+
+    // Delete user account
+    async function deleteAccount() {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+        try {
+          await deleteUser(user);
+          alert("Account deleted successfully.");
+          window.location.href = "login.html";
+        } catch (error) {
+          console.error("Error deleting account:", error);
+          alert("Error deleting account: " + error.message);
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-gray-100 text-gray-900">
+  <!-- Sidebar -->
+  <aside class="sidebar p-4 bg-white shadow mb-6">
+    <h2 class="text-xl font-bold mb-4">My Account</h2>
+    <ul class="space-y-2">
+      <li><a href="homepage.html" class="text-blue-600 hover:underline">Dashboard</a></li>
+      <li><a href="transaction.html" class="text-blue-600 hover:underline">Transactions</a></li>
+      <li><a href="#" class="text-blue-600 hover:underline">Cash Flow</a></li>
+      <li><a href="account.html" class="text-blue-600 hover:underline">Accounts</a></li>
+      <li><a href="investments.html" class="text-blue-600 hover:underline">Investments</a></li>
+      <li><a href="#" class="text-blue-600 hover:underline">Categories</a></li>
+    </ul>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="container mx-auto p-6 max-w-4xl">
+    <header class="mb-8">
+      <h1 class="text-3xl font-bold">My Account</h1>
+    </header>
+
+    <!-- Display Account Information -->
+    <div class="bg-white shadow rounded p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-4">Account Information</h2>
+      <p><strong>Email:</strong> <span id="displayEmail">Loading...</span></p>
+      <p><strong>Full Name:</strong> <span id="displayName">Loading...</span></p>
+      <p><strong>Phone:</strong> <span id="displayPhone">Loading...</span></p>
+      <p><strong>Account Created:</strong> <span id="displayCreation">Loading...</span></p>
+    </div>
+
+    <!-- Edit Profile Form -->
+    <div class="bg-white shadow rounded p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-4">Edit Profile</h2>
+      <form id="editProfileForm" onsubmit="saveProfileChanges(event)">
+        <label for="editName">Full Name:</label>
+        <input type="text" id="editName" required>
+
+        <label for="editEmail">Email:</label>
+        <input type="email" id="editEmail" required>
+
+        <label for="editPhone">Phone:</label>
+        <input type="tel" id="editPhone">
+
+        <label for="editPassword">New Password:</label>
+        <input type="password" id="editPassword" placeholder="Leave blank to keep current password">
+
+        <button type="submit" class="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600 mt-4">Save Changes</button>
+      </form>
+    </div>
+
+    <!-- Delete Account -->
+    <div class="bg-white shadow rounded p-6">
+      <h2 class="text-xl font-semibold mb-4">Danger Zone</h2>
+      <button onclick="deleteAccount()" class="bg-red-500 text-white rounded px-4 py-2 hover:bg-red-600">Delete Account</button>
+    </div>
+  </div>
+</body>
+</html>
+
