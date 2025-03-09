@@ -6,7 +6,7 @@
   <title>My Account</title>
   <link rel="stylesheet" href="account.css">
   <script src="https://cdn.tailwindcss.com"></script>
-
+  
   <script type="module">
     // Import Firebase modules
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
@@ -127,20 +127,22 @@
     document.getElementById("editProfileForm").addEventListener("submit", saveProfileChanges);
   </script>
 </head>
+<link rel="stylesheet" href="dashboard.css">
 
 <body class="bg-gray-100 text-gray-900">
   <!-- Sidebar -->
-  <aside class="sidebar p-4 bg-white shadow mb-6">
-    <h2 class="text-xl font-bold mb-4">My Account</h2>
-    <ul class="space-y-2">
-      <li><a href="homepage.html" class="text-blue-600 hover:underline">Dashboard</a></li>
-      <li><a href="transaction.html" class="text-blue-600 hover:underline">Transactions</a></li>
-      <li><a href="#" class="text-blue-600 hover:underline">Cash Flow</a></li>
-      <li><a href="account.html" class="text-blue-600 hover:underline">Accounts</a></li>
-      <li><a href="investments.html" class="text-blue-600 hover:underline">Investments</a></li>
-      <li><a href="#" class="text-blue-600 hover:underline">Categories</a></li>
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar">
+    <h2>Spark Finance</h2>
+    <ul>
+      <li><a href="homepage.html">Dashboard</a></li>
+      <li><a href="transaction.html">Transactions</a></li>
+      <li><a href="goals.html">Goals</a></li>
+      <li><a href="investment.html">Investments</a></li>
+      <li><a href="account.html">Account</a></li>
     </ul>
   </aside>
+  
 
   <!-- Main Content -->
   <div class="container mx-auto p-6 max-w-4xl">
