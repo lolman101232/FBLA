@@ -3,37 +3,194 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Investments - Stock Trends</title>
+  <title>Investments - Virtual Portfolio & News</title>
   <link rel="stylesheet" href="dashboard.css">
-  <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Layout for two-column structure */
+    .two-column {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 20px;
+    }
+    .column {
+      flex: 1;
+      min-width: 300px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    /* Virtual Portfolio */
+    .portfolio-list {
+      list-style: none;
+      padding: 0;
+    }
+    .portfolio-list li {
+      margin-bottom: 10px;
+      text-align: left;
+    }
+    .portfolio-form input,
+    .portfolio-form button {
+      width: 100%;
+      margin: 5px 0;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    .portfolio-form button {
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    /* News Feed */
+    .news-feed article {
+      border-bottom: 1px solid #e9ecef;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+    .news-feed h3 {
+      margin: 0 0 5px;
+      font-size: 1rem;
+    }
+    .news-feed p {
+      margin: 0;
+      font-size: 0.9rem;
+    }
+    /* Stock Charts */
+    .panel-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      padding: 20px;
+    }
+    .panel {
+      min-width: 300px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+  </style>
 </head>
 <body>
+  <!-- Sidebar Navigation -->
   <aside class="sidebar">
     <h2>Spark Finance</h2>
     <ul>
       <li><a href="homepage.html">Dashboard</a></li>
       <li><a href="transaction.html">Transactions</a></li>
-      <li><a href="#">Cash Flow</a></li>
-      <li><a href="#">Accounts</a></li>
-      <li><a href="investments.html">Investments</a></li>
-      <li><a href="#">Categories</a></li>
+      <li><a href="goals.html">Goals</a></li>
+      <li><a href="investment.html">Investments</a></li>
+      <li><a href="account.html">Account</a></li>
     </ul>
   </aside>
 
   <section class="dashboard">
     <header class="dashboard-header">
-      <h1>Reccomended Investments For You</h1>
+      <h1>Investments: Top 5 Stocks for Teens</h1>
     </header>
 
+    <!-- Two-column layout: Left = Portfolio Simulator, Right = News Feed -->
+    <div class="two-column">
+      <!-- Virtual Portfolio Simulator Panel -->
+      <div class="column">
+        <h2>Virtual Portfolio Simulator</h2>
+        <canvas id="portfolioChart"></canvas>
+        <ul class="portfolio-list" id="portfolioList"></ul>
+        <form id="portfolioForm" class="portfolio-form">
+          <input type="text" id="stockSymbol" placeholder="Stock Symbol (e.g., AAPL)" required>
+          <input type="number" id="stockPrice" placeholder="Price per Share ($)" required>
+          <input type="number" id="shares" placeholder="Number of Shares" required>
+          <button type="submit">Add Transaction</button>
+        </form>
+        <p id="portfolioTotal">Total Portfolio Value: $0.00</p>
+      </div>
+
+      <!-- News Feed Panel -->
+      <div class="column">
+        <h2>Financial News Feed</h2>
+        <div class="news-feed" id="newsFeed"><p>Loading news...</p></div>
+      </div>
+    </div>
+
+    <!-- Top 5 Investment Stock Charts -->
     <div class="panel-grid" id="stocks-grid">
       <p>Loading stock data...</p>
     </div>
   </section>
 
   <script>
-    // List of stocks to display
-    const stocks = [
+    /********** Virtual Portfolio Simulator **********/
+    let portfolio = [];
+
+    function calculatePortfolioTotal() {
+      return portfolio.reduce((total, item) => total + item.price * item.shares, 0).toFixed(2);
+    }
+
+    function renderPortfolio() {
+      const portfolioList = document.getElementById("portfolioList");
+      portfolioList.innerHTML = "";
+      portfolio.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = `${item.symbol}: ${item.shares} shares @ $${item.price} each (Value: $${(item.price * item.shares).toFixed(2)})`;
+        portfolioList.appendChild(li);
+      });
+      document.getElementById("portfolioTotal").textContent = "Total Portfolio Value: $" + calculatePortfolioTotal();
+    }
+
+    document.getElementById("portfolioForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+      const symbol = document.getElementById("stockSymbol").value.toUpperCase();
+      const price = parseFloat(document.getElementById("stockPrice").value);
+      const shares = parseInt(document.getElementById("shares").value);
+      if (symbol && price && shares) {
+        portfolio.push({ symbol, price, shares });
+        renderPortfolio();
+        document.getElementById("portfolioForm").reset();
+      }
+    });
+
+    renderPortfolio();
+
+    /********** Financial News Feed **********/
+    const NEWS_API_KEY = "66e3f17e80c142ccb8c85b9d39a22a4c";
+    const NEWS_URL = `https://newsapi.org/v2/top-headlines?category=business&country=us&apiKey=${NEWS_API_KEY}`;
+
+    async function fetchNews() {
+      try {
+        const response = await fetch(NEWS_URL);
+        const data = await response.json();
+        return data.articles;
+      } catch (error) {
+        console.error("Error fetching news:", error);
+        return [];
+      }
+    }
+
+    async function renderNews() {
+      const newsFeed = document.getElementById("newsFeed");
+      newsFeed.innerHTML = "";
+      const articles = await fetchNews();
+      if (articles.length === 0) {
+        newsFeed.innerHTML = "<p>No news available at the moment.</p>";
+        return;
+      }
+      articles.slice(0, 5).forEach(article => {
+        const articleEl = document.createElement("article");
+        articleEl.innerHTML = `<h3>${article.title}</h3><p>${article.description || ""}</p><a href="${article.url}" target="_blank">Read more</a>`;
+        newsFeed.appendChild(articleEl);
+      });
+    }
+
+    renderNews();
+    setInterval(renderNews, 10 * 60 * 1000);
+
+     // List of stocks to display
+     const stocks = [
       { symbol: 'AAPL', name: 'Apple Inc.' },
       { symbol: 'MSFT', name: 'Microsoft Corporation' },
       { symbol: 'TSLA', name: 'Tesla, Inc.' },
@@ -146,4 +303,3 @@
   </script>
 </body>
 </html>
-
