@@ -7,7 +7,7 @@
         <link rel="stylesheet" href="dashboard.css">
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     </head>
-<body>
+    <body>
     <aside class="sidebar">
         <h2 class="font-bold text-3xl mb-2">Spark Finance</h2>
         <ul>
@@ -17,6 +17,13 @@
             <li><a href="investment.html" class="text-base font-medium">Investments</a></li>
             <li><a href="account.html" class="text-base font-medium">Account</a></li>
         </ul>
+        <button class="chatbot-btn" onclick="toggleChatbot()">💬</button>
+
+        <div id="chatbotContainer" class="chatbot-container">
+            <button class="close-chatbot" onclick="toggleChatbot()">✖</button>
+            <div class="chatbot-header">Chatbot</div>
+            <div id="chatbotContent">Your chatbot will appear here...</div>
+        </div>
     </aside>
 
     <section class="dashboard">

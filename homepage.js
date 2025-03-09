@@ -502,13 +502,23 @@ function fetchAndClusterTransactions() {
         });
     });
 }
-function toggleSidebar() {
-    const sidebar = document.getElementById("sidebar");
-    document.getElementById("sidebar").classList.toggle("hidden");
+document.addEventListener("DOMContentLoaded", function () {
+    // Toggle chatbot visibility
+    function toggleChatbot() {
+        const chatbotContainer = document.getElementById('chatbotContainer');
+        if (chatbotContainer.style.display === 'none' || chatbotContainer.style.display === '') {
+            chatbotContainer.style.display = 'block';
+        } else {
+            chatbotContainer.style.display = 'none';
+        }
+    }
 
-    // Toggle the Tailwind class to show/hide sidebar
-    sidebar.classList.toggle("-translate-x-full");
-}
+    // Attach event listener to the chatbot toggle button
+    const chatbotBtn = document.querySelector('.chatbot-btn');
+    if (chatbotBtn) {
+        chatbotBtn.addEventListener('click', toggleChatbot);
+    }
+});
 // ✅ Call the function to fetch and cluster transaction data
 fetchAndClusterTransactions();
 setupCharts();
