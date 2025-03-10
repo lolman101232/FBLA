@@ -16,17 +16,16 @@ body {
 /* Sidebar Styles */
 .sidebar {
     width: 250px;
-    background: hsl(var(--card)); /* Keeping the default background */
     border-right: 1px solid hsl(var(--border));
     padding: 20px;
-    display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 .sidebar h2 {
     font-size: 20px;
     font-weight: bold;
-    color: #3500d5; /* Bright Purple for "Spark Finance" */
+    color: hsl(var(--primary));
     margin-bottom: 20px;
 }
 
@@ -73,4 +72,91 @@ body {
 
 .light-baby-blue {
     background-color: rgba(220, 235, 255, 1);
+}
+
+/* Chatbot Button Styles */
+.chatbot-btn {
+    position: fixed;
+    bottom: 20px; /* Adjust the distance from the bottom */
+    left: 20px;  /* Adjust the distance from the right */
+    background-color: #672bdf; /* Change the color to fit your theme */
+    color: white;
+    border: none;
+    border-radius: 50%;
+    padding: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 1001; /* Ensure it's on top of other content */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional shadow for visibility */
+}
+
+.chatbot-btn:hover {
+    background-color: #9e7ee4; /* Optional hover effect */
+}
+
+#chatbotContainer {
+    display: none;
+    position: fixed;
+    bottom: 170px;
+    left: 20px;
+    width: 300px;
+    height: 500px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    z-index: 1000;
+    padding: 10px;
+}
+
+.chatbot-header {
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+    color: #6A0DAD;
+}
+
+.close-chatbot {
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: 18px;
+    position: absolute;
+    top: 5px;
+    right: 10px;
+}
+
+/* Logo Animation */
+@keyframes spinLogo {
+    0% {
+        transform: translateX(-50%) rotate(0deg);
+    }
+    100% {
+        transform: translateX(-50%) rotate(360deg);
+    }
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    top: -17px;
+    left: 10.5%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 100px;
+    background: url('purple_logo-removebg-preview.png') center center / contain no-repeat;
+    z-index: 1;
+    animation: spinLogo 1.2s ease-out forwards; /* Spins once over 1.2s */
+}
+
+
+
+:root {
+    --background: 240, 100%, 98%; /* Light grayish background */
+    --foreground: 220, 15%, 20%; /* Dark text */
+    --card: 240, 100%, 95%; /* Light blue-gray for cards */
+    --primary: 240, 90%, 50%; /* Strong blue */
+    --primary-foreground: 240, 100%, 98%; /* Almost white */
+    --ring: 240, 100%, 40%; /* Slightly darker blue */
+    --radius: 8px;
 }

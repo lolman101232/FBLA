@@ -79,14 +79,21 @@
 <body>
   <!-- Sidebar Navigation -->
   <aside class="sidebar">
-    <h2>Spark Finance</h2>
+    <h2 class="font-bold text-3xl mb-2">Spark Finance</h2>
     <ul>
-      <li><a href="homepage.html">Dashboard</a></li>
-      <li><a href="transaction.html">Transactions</a></li>
-      <li><a href="goals.html">Goals</a></li>
-      <li><a href="investment.html">Investments</a></li>
-      <li><a href="account.html">Account</a></li>
+        <li><a href="homepage.html" class="text-base font-medium">Dashboard</a></li>
+        <li><a href="transaction.html" class="text-base font-medium">Transactions</a></li>
+        <li><a href="investment.html" class="text-base font-medium">Investments</a></li>
+        <li><a href="goals.html" class="text-base font-medium">Goals</a></li>
+        <li><a href="account.html" class="text-base font-medium">Account</a></li>
     </ul>
+    <button class="chatbot-btn" onclick="toggleChatbot()">💬</button>
+
+    <div id="chatbotContainer" class="chatbot-container">
+        <button class="close-chatbot" onclick="toggleChatbot()">✖</button>
+        <div class="chatbot-header">Chatbot</div>
+        <div id="chatbotContent">Your chatbot will appear here...</div>
+    </div>
   </aside>
 
   <section class="dashboard">

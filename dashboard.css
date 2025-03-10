@@ -289,7 +289,7 @@ div {
     position: fixed;
     bottom: 170px;
     left: 20px;
-    width: 260px;
+    width: 300px;
     height: 500px;
     background-color: #fff;
     border: 1px solid #ccc;
@@ -315,3 +315,28 @@ div {
     top: 5px;
     right: 10px;
 }
+
+/* Logo Animation */
+@keyframes spinLogo {
+    0% {
+        transform: translateX(-50%) rotate(0deg);
+    }
+    100% {
+        transform: translateX(-50%) rotate(360deg);
+    }
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    top: -17px;
+    left: 10.5%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 100px;
+    background: url('purple_logo-removebg-preview.png') center center / contain no-repeat;
+    z-index: 1;
+    animation: spinLogo 1.2s ease-out forwards; /* Spins once over 1.2s */
+}
+
+

@@ -1,200 +1,224 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Transactions</title>
-  <link rel="stylesheet" href="transaction.css"/>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="text-gray-900">
-    <aside class="sidebar p-4 shadow mb-6">
-    <h2 class="text-xl font-bold mb-4">Spark Finance</h2>
-    <ul class="space-y-2">
-      <li><a href="homepage.html" class="text-blue-600 hover:underline">Dashboard</a></li>
-      <li><a href="transaction.html" class="text-blue-600 hover:underline">Transactions</a></li>
-      <li><a href="investment.html" class="text-blue-600 hover:underline">Investments</a></li>
-      <li><a href="account.html" class="text-blue-600 hover:underline">Account</a></li>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Transactions</title>
+    <link rel="stylesheet" href="transaction.css"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="text-gray-900">
+  <aside class="sidebar">
+    <h2 class="font-bold text-3xl mb-2">Spark Finance</h2>
+    <ul>
+        <li><a href="homepage.html" class="text-base font-medium">Dashboard</a></li>
+        <li><a href="transaction.html" class="text-base font-medium">Transactions</a></li>
+        <li><a href="investment.html" class="text-base font-medium">Investments</a></li>
+        <li><a href="goals.html" class="text-base font-medium">Goals</a></li>
+        <li><a href="account.html" class="text-base font-medium">Account</a></li>
     </ul>
+    <button class="chatbot-btn" onclick="toggleChatbot()">💬</button>
+
+    <div id="chatbotContainer" class="chatbot-container">
+        <button class="close-chatbot" onclick="toggleChatbot()">✖</button>
+        <div class="chatbot-header">Chatbot</div>
+        <div id="chatbotContent">Your chatbot will appear here...</div>
+    </div>
   </aside>
 
-  <div id="mainContainer" class="p-6 w-full">
-    <header class="mb-8">
-      <h1 class="text-3xl font-bold">Transactions</h1>
-      <p class="text-gray-500 mt-2">View and manage your recent transactions</p>
-    </header>
+    <div id="mainContainer" class="p-6 w-full">
+      <header class="mb-8">
+        <h1 class="text-3xl font-bold">Transactions</h1>
+        <p class="text-gray-500 mt-2">View and manage your recent transactions</p>
+      </header>
 
-    <div class="mb-8 p-4 bg-white shadow rounded-lg">
-      <div class="flex items-center justify-between">
-        <h2 class="text-lg font-semibold">Summary</h2>
-        <div class="flex items-center space-x-2">
-          <select id="summaryPeriod" class="border border-gray-300 rounded px-2 py-1">
-            <option value="week">This Week</option>
-            <option value="month" selected>This Month</option>
-            <option value="year">This Year</option>
+      <div class="mb-8 p-4 bg-white shadow rounded-lg">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-semibold">Summary</h2>
+          <div class="flex items-center space-x-2">
+            <select id="summaryPeriod" class="border border-gray-300 rounded px-2 py-1">
+              <option value="week">This Week</option>
+              <option value="month" selected>This Month</option>
+              <option value="year">This Year</option>
+            </select>
+            <span id="currentDate" class="text-gray-500"></span>
+          </div>
+        </div>
+        <p class="text-gray-500 mt-2" id="summaryText">Your transaction overview for the selected period</p>
+        <div class="grid gap-4 grid-cols-2 mt-4">
+          <div class="p-4 bg-[#cce0ff] rounded-lg">
+            <div class="flex justify-between items-center">
+              <h3 class="text-sm font-medium">Total Spent</h3>
+              <span class="text-gray-400">💲</span>
+            </div>
+            <p class="text-2xl font-bold mt-2" id="totalSpent">$0.00</p>
+            <p class="text-xs text-gray-400">Based on selected period</p>
+          </div>
+          <div class="p-4 bg-[#cce0ff] rounded-lg">
+            <div class="flex justify-between items-center">
+              <h3 class="text-sm font-medium">Active Subscriptions</h3>
+              <span class="text-gray-400">💳</span>
+            </div>
+            <p class="text-2xl font-bold mt-2" id="activeSubscriptions">0</p>
+            <p class="text-xs text-gray-400">Based on selected period</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row justify-between items-center mb-6 space-y-4 sm:space-y-0">
+        <h2 class="text-xl font-semibold">Recent Transactions</h2>
+        <div class="flex items-center gap-4">
+          <select id="transactionType" class="border border-gray-300 rounded px-2 py-1">
+              <option value="all">All Transactions</option>
+              <option value="subscription">Subscriptions</option>
+              <option value="one-time">One-time Purchases</option>
           </select>
-          <span id="currentDate" class="text-gray-500"></span>
+      
+          <input type="text" id="transactionSearch" placeholder="Search by date (YYYY-MM-DD)" class="border border-gray-300 rounded w-64 py-2"/>
+      
+          <button id="addTransactionButton" class="bg-[#3d52a0] text-white rounded px-4 py-2 hover:bg-[#7091e6]" onclick="openPopup()">+ Add Transaction</button>
+      </div>
         </div>
-      </div>
-      <p class="text-gray-500 mt-2" id="summaryText">Your transaction overview for the selected period</p>
-      <div class="grid gap-4 grid-cols-2 mt-4">
-        <div class="p-4 bg-[#cce0ff] rounded-lg">
-          <div class="flex justify-between items-center">
-            <h3 class="text-sm font-medium">Total Spent</h3>
-            <span class="text-gray-400">💲</span>
-          </div>
-          <p class="text-2xl font-bold mt-2" id="totalSpent">$0.00</p>
-          <p class="text-xs text-gray-400">Based on selected period</p>
+        <div class="bg-[#ede8f5] shadow rounded-lg overflow-x-auto">
+          <table class="min-w-full">
+            <thead>
+              <tr>
+                <th class="py-3 px-4 text-left bg-[#cce0ff]">Date 📅</th>
+                <th class="py-3 px-4 text-left bg-[#cce0ff]">Category</th>
+                <th class="py-3 px-4 text-left bg-[#cce0ff]">Amount 💰</th>
+              </tr>
+              <thead class="bg-[#d8eefe] text-gray-900"></thead>
+                <tbody class="text-gray-700 bg-[#FFFF]" id="transactionsTableBody"></tbody>
+                </table>
         </div>
-        <div class="p-4 bg-[#cce0ff] rounded-lg">
-          <div class="flex justify-between items-center">
-            <h3 class="text-sm font-medium">Active Subscriptions</h3>
-            <span class="text-gray-400">💳</span>
-          </div>
-          <p class="text-2xl font-bold mt-2" id="activeSubscriptions">0</p>
-          <p class="text-xs text-gray-400">Based on selected period</p>
-        </div>
-      </div>
-    </div>
+    <!-- JavaScript Section -->
+    <script>
+      // Set the current date next to the dropdown.
+      document.getElementById('currentDate').textContent =
+        new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
-    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 space-y-4 sm:space-y-0">
-      <h2 class="text-xl font-semibold">Recent Transactions</h2>
-      <div class="flex items-center gap-4">
-        <select id="transactionType" class="border border-gray-300 rounded px-2 py-1">
-            <option value="all">All Transactions</option>
-            <option value="subscription">Subscriptions</option>
-            <option value="one-time">One-time Purchases</option>
-        </select>
-    
-        <input type="text" id="transactionSearch" placeholder="Search by date (YYYY-MM-DD)" class="border border-gray-300 rounded w-64 py-2"/>
-    
-        <button id="addTransactionButton" class="bg-[#3d52a0] text-white rounded px-4 py-2 hover:bg-[#7091e6]" onclick="openPopup()">+ Add Transaction</button>
-    </div>
-      </div>
-      <div class="bg-[#ede8f5] shadow rounded-lg overflow-x-auto">
-        <table class="min-w-full">
-          <thead>
-            <tr>
-              <th class="py-3 px-4 text-left bg-[#cce0ff]">Date 📅</th>
-              <th class="py-3 px-4 text-left bg-[#cce0ff]">Category</th>
-              <th class="py-3 px-4 text-left bg-[#cce0ff]">Amount 💰</th>
-            </tr>
-            <thead class="bg-[#d8eefe] text-gray-900"></thead>
-              <tbody class="text-gray-700 bg-[#FFFF]" id="transactionsTableBody"></tbody>
-              </table>
-      </div>
-  <!-- JavaScript Section -->
-  <script>
-    // Set the current date next to the dropdown.
-    document.getElementById('currentDate').textContent =
-      new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      // Sample transactions data (replace with your actual data)
+      const transactions = [
+        { date: '2025-02-19', category: 'Subscription', amount: 29.99, type: 'subscription' },
+        { date: '2025-02-18', category: 'Groceries', amount: 55.00, type: 'one-time' },
+        { date: '2025-02-15', category: 'Entertainment', amount: 45.50, type: 'one-time' },
+        { date: '2025-02-14', category: 'Subscription', amount: 29.99, type: 'subscription' },
+        { date: '2025-01-25', category: 'Dining', amount: 70.00, type: 'one-time' },
+        { date: '2024-12-20', category: 'Subscription', amount: 29.99, type: 'subscription' },
+      ];
 
-    // Sample transactions data (replace with your actual data)
-    const transactions = [
-      { date: '2025-02-19', category: 'Subscription', amount: 29.99, type: 'subscription' },
-      { date: '2025-02-18', category: 'Groceries', amount: 55.00, type: 'one-time' },
-      { date: '2025-02-15', category: 'Entertainment', amount: 45.50, type: 'one-time' },
-      { date: '2025-02-14', category: 'Subscription', amount: 29.99, type: 'subscription' },
-      { date: '2025-01-25', category: 'Dining', amount: 70.00, type: 'one-time' },
-      { date: '2024-12-20', category: 'Subscription', amount: 29.99, type: 'subscription' },
-    ];
+      // Filter transactions by the selected period using calendar boundaries.
+      function filterTransactionsByPeriod(period) {
+        const now = new Date();
+        if (period === 'week') {
+          // Determine the start of the current week (assuming Sunday as first day)
+          const dayOfWeek = now.getDay(); 
+          const startOfWeek = new Date(now);
+          startOfWeek.setHours(0, 0, 0, 0);
+          startOfWeek.setDate(now.getDate() - dayOfWeek);
+          const endOfWeek = new Date(startOfWeek);
+          endOfWeek.setDate(startOfWeek.getDate() + 7);
+          return transactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate >= startOfWeek && tDate < endOfWeek;
+          });
+        } else if (period === 'month') {
+          // Start and end of the current month
+          const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+          const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+          return transactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate >= startOfMonth && tDate < endOfMonth;
+          });
+        } else if (period === 'year') {
+          // Start and end of the current year
+          const startOfYear = new Date(now.getFullYear(), 0, 1);
+          const endOfYear = new Date(now.getFullYear() + 1, 0, 1);
+          return transactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate >= startOfYear && tDate < endOfYear;
+          });
+        }
+        return transactions;
+      }
 
-    // Filter transactions by the selected period using calendar boundaries.
-    function filterTransactionsByPeriod(period) {
-      const now = new Date();
-      if (period === 'week') {
-        // Determine the start of the current week (assuming Sunday as first day)
-        const dayOfWeek = now.getDay(); 
-        const startOfWeek = new Date(now);
-        startOfWeek.setHours(0, 0, 0, 0);
-        startOfWeek.setDate(now.getDate() - dayOfWeek);
-        const endOfWeek = new Date(startOfWeek);
-        endOfWeek.setDate(startOfWeek.getDate() + 7);
-        return transactions.filter(t => {
-          const tDate = new Date(t.date);
-          return tDate >= startOfWeek && tDate < endOfWeek;
+      // Update the summary section based on the selected period.
+      function updateSummary() {
+        const period = document.getElementById('summaryPeriod').value;
+        const filtered = filterTransactionsByPeriod(period);
+        const total = filtered.reduce((sum, t) => sum + t.amount, 0);
+        const subscriptionsCount = filtered.filter(t => t.type === 'subscription').length;
+        document.getElementById('totalSpent').textContent = "$" + total.toFixed(2);
+        document.getElementById('activeSubscriptions').textContent = subscriptionsCount;
+        document.getElementById('summaryText').textContent = "Your transaction overview for the selected period";
+      }
+
+      // Update the transactions table based on type and search filters.
+      function updateTransactionsList() {
+        const typeFilter = document.getElementById('transactionType').value;
+        const searchText = document.getElementById('transactionSearch').value.trim();
+        
+        let filtered = transactions.filter(t => {
+          if (typeFilter === 'all') return true;
+          return t.type === typeFilter;
         });
-      } else if (period === 'month') {
-        // Start and end of the current month
-        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-        return transactions.filter(t => {
-          const tDate = new Date(t.date);
-          return tDate >= startOfMonth && tDate < endOfMonth;
-        });
-      } else if (period === 'year') {
-        // Start and end of the current year
-        const startOfYear = new Date(now.getFullYear(), 0, 1);
-        const endOfYear = new Date(now.getFullYear() + 1, 0, 1);
-        return transactions.filter(t => {
-          const tDate = new Date(t.date);
-          return tDate >= startOfYear && tDate < endOfYear;
+        
+        if (searchText) {
+          filtered = filtered.filter(t => t.date.includes(searchText));
+        }
+        
+        const tableBody = document.getElementById('transactionsTableBody');
+        tableBody.innerHTML = "";
+        filtered.forEach(t => {
+          const row = document.createElement('tr');
+          row.classList.add("border-b");
+          row.innerHTML = `
+            <td class="py-3 px-4">${t.date}</td>
+            <td class="py-3 px-4">${t.category}</td>
+            <td class="py-3 px-4">$${t.amount.toFixed(2)}</td>
+          `;
+          tableBody.appendChild(row);
         });
       }
-      return transactions;
-    }
 
-    // Update the summary section based on the selected period.
-    function updateSummary() {
-      const period = document.getElementById('summaryPeriod').value;
-      const filtered = filterTransactionsByPeriod(period);
-      const total = filtered.reduce((sum, t) => sum + t.amount, 0);
-      const subscriptionsCount = filtered.filter(t => t.type === 'subscription').length;
-      document.getElementById('totalSpent').textContent = "$" + total.toFixed(2);
-      document.getElementById('activeSubscriptions').textContent = subscriptionsCount;
-      document.getElementById('summaryText').textContent = "Your transaction overview for the selected period";
-    }
-
-    // Update the transactions table based on type and search filters.
-    function updateTransactionsList() {
-      const typeFilter = document.getElementById('transactionType').value;
-      const searchText = document.getElementById('transactionSearch').value.trim();
-      
-      let filtered = transactions.filter(t => {
-        if (typeFilter === 'all') return true;
-        return t.type === typeFilter;
-      });
-      
-      if (searchText) {
-        filtered = filtered.filter(t => t.date.includes(searchText));
+      // Popup functions (using your original code logic)
+      function openPopup(){
+        const popup = document.getElementById("popup");
+        popup.classList.add("open-popup");
       }
-      
-      const tableBody = document.getElementById('transactionsTableBody');
-      tableBody.innerHTML = "";
-      filtered.forEach(t => {
-        const row = document.createElement('tr');
-        row.classList.add("border-b");
-        row.innerHTML = `
-          <td class="py-3 px-4">${t.date}</td>
-          <td class="py-3 px-4">${t.category}</td>
-          <td class="py-3 px-4">$${t.amount.toFixed(2)}</td>
-        `;
-        tableBody.appendChild(row);
+      function closePopup(){
+        const popup = document.getElementById("popup");
+        popup.classList.remove("open-popup");
+      }
+
+      // Event listeners
+      document.getElementById('summaryPeriod').addEventListener('change', () => {
+        updateSummary();
+        updateTransactionsList();
       });
-    }
+      document.getElementById('transactionType').addEventListener('change', updateTransactionsList);
+      document.getElementById('transactionSearch').addEventListener('input', updateTransactionsList);
+      document.addEventListener("DOMContentLoaded", function () {
+      // Toggle chatbot visibility
+      function toggleChatbot() {
+          const chatbotContainer = document.getElementById('chatbotContainer');
+          if (chatbotContainer.style.display === 'none' || chatbotContainer.style.display === '') {
+              chatbotContainer.style.display = 'block';
+          } else {
+              chatbotContainer.style.display = 'none';
+          }
+      }
 
-    // Popup functions (using your original code logic)
-    function openPopup(){
-      const popup = document.getElementById("popup");
-      popup.classList.add("open-popup");
-    }
-    function closePopup(){
-      const popup = document.getElementById("popup");
-      popup.classList.remove("open-popup");
-    }
-
-    // Event listeners
-    document.getElementById('summaryPeriod').addEventListener('change', () => {
+      // Attach event listener to the chatbot toggle button
+      const chatbotBtn = document.querySelector('.chatbot-btn');
+      if (chatbotBtn) {
+          chatbotBtn.addEventListener('click', toggleChatbot);
+      }
+      });
+      // Initial rendering
       updateSummary();
       updateTransactionsList();
-    });
-    document.getElementById('transactionType').addEventListener('change', updateTransactionsList);
-    document.getElementById('transactionSearch').addEventListener('input', updateTransactionsList);
 
-    // Initial rendering
-    updateSummary();
-    updateTransactionsList();
-
-  </script>
-</body>
-</html>
+    </script>
+  </body>
+  </html>
