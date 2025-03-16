@@ -58,6 +58,15 @@ This project is a comprehensive personal finance management application designed
   - Real-time stock data is fetched using the Twelve Data API (or Alpha Vantage API if configured).
   - Documentation: [Twelve Data API Docs](https://twelvedata.com/docs) | [Alpha Vantage API Docs](https://www.alphavantage.co/documentation/)
 
+- **Langchain and Ollama for the AI**
+  - Accessing the AI model is done through Ollama
+  - Used Langchain to feed the model data
+  - Documentation: Ollama (https://ollama.com/) Langchain (https://www.langchain.com/)
+
+- **Tesseract**
+  - Use tesseract to extract text from a webcam picture
+  - Documentation: (https://github.com/tesseract-ocr/tesseract)
+
 Any open-source libraries used are referenced above, and all source code is original or adapted from standard templates with proper attribution where necessary.
 
 ---
