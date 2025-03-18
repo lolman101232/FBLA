@@ -67,6 +67,11 @@ This project is a comprehensive personal finance management application designed
   - Use tesseract to extract text from a webcam picture
   - Documentation: (https://github.com/tesseract-ocr/tesseract)
 
+- **Flask**
+  -Use Flask to connect python code to Javascript and then HTML
+  -Sets up an API that can be called by Javascript to gather and return strings
+  -Documentation: (https://flask.palletsprojects.com/)
+
 Any open-source libraries used are referenced above, and all source code is original or adapted from standard templates with proper attribution where necessary.
 
 ---
