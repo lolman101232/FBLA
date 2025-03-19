@@ -88,4 +88,4 @@ This project is licensed under the MIT License. Please refer to the LICENSE file
 - **Templates & Libraries:** Detailed references are provided above to ensure proper attribution and adherence to open-source licensing requirements.
 - **Competitive Event Requirements:** This README, along with the source code and additional documentation, meets the FBLA Coding & Programming competitive event guidelines. The documentation covers all required aspects including functionality, user experience, code quality, and data management.
 
-For further information, please refer to the accompanying documentation in the repository or contact [Your Name] at [pranav.bhumana8@gmail.com].
+For further information, please refer to the accompanying documentation in the repository or contact [Pranav Bhumana] at [pranav.bhumana8@gmail.com].
