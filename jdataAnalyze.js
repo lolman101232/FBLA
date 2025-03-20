@@ -53,7 +53,6 @@ function fetchTransactionData(callback) {
     });
 }
 
-// Organize transaction data for charts
 function organizeTransactionData(transactions) {
     let spendingOverTime = {};
     let categoryBreakdown = {};
@@ -62,23 +61,25 @@ function organizeTransactionData(transactions) {
 
     transactions.forEach(({ date, category, amount }) => {
         const transactionAmount = parseFloat(amount) || 0;
-        
-        // Spending over time (line chart data)
+
+        // Always include in category breakdown, including deposits
+        categoryBreakdown[category] = (categoryBreakdown[category] || 0) + transactionAmount;
+
+        if (category.toLowerCase() === "deposit") {
+            // Only add to total income for deposits
+            totalIncome += transactionAmount;
+            return; // Skip adding deposits to spendingOverTime
+        }
+
+        // Only add expenses to spending over time
         spendingOverTime[date] = (spendingOverTime[date] || 0) + transactionAmount;
 
-        // Category breakdown (pie chart data)
-        categoryBreakdown[category] = (categoryBreakdown[category] || 0) + transactionAmount;
-        
-        // Profit/Loss Calculation
-        if (transactionAmount > 0) {
-            totalIncome += transactionAmount;
-        } else {
-            totalExpense += Math.abs(transactionAmount);
-        }
+        // Profit/Loss Calculation for expenses
+        totalExpense += Math.abs(transactionAmount);
     });
 
     return {
-        spendingOverTime: Object.entries(spendingOverTime).sort(),
+        spendingOverTime: Object.entries(spendingOverTime).sort((a, b) => new Date(a[0]) - new Date(b[0])),
         categoryBreakdown,
         profitLoss: [totalIncome, totalExpense]
     };

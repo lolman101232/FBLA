@@ -76,22 +76,16 @@
   </style>
 </head>
 <body>
+  <!-- Sidebar Navigation -->
   <aside class="sidebar">
     <h2>My Accounts</h2>
     <ul>
-        <li><a href="homepage.html" class="text-base font-medium">Dashboard</a></li>
-        <li><a href="transaction.html" class="text-base font-medium">Transactions</a></li>
-        <li><a href="investment.html" class="text-base font-medium">Investments</a></li>
-        <li><a href="goals.html" class="text-base font-medium">Goals</a></li>
-        <li><a href="account.html" class="text-base font-medium">Account</a></li>
+      <li><a href="homepage.html" class="text-blue-600 hover:underline">Dashboard</a></li>
+      <li><a href="transaction.html" class="text-blue-600 hover:underline">Transactions</a></li>
+      <li><a href="investment.html" class="text-blue-600 hover:underline">Investments</a></li>
+      <li><a href="goals.html" class="text-blue-600 hover:underline">Goals</a></li>
+      <li><a href="account.html" class="text-blue-600 hover:underline">Account</a></li>
     </ul>
-    <button class="chatbot-btn" onclick="toggleChatbot()">💬</button>
-
-    <div id="chatbotContainer" class="chatbot-container">
-        <button class="close-chatbot" onclick="toggleChatbot()">✖</button>
-        <div class="chatbot-header">Chatbot</div>
-        <div id="chatbotContent">Your chatbot will appear here...</div>
-    </div>
   </aside>
 
   <section class="dashboard">
@@ -123,7 +117,10 @@
   </section>
 
   <script>
-    let goals = []; // Initialize the goals array
+    const goals = [
+      { name: "Emergency Fund", target: 1000, saved: 400, deadline: "2025-06-01" },
+      { name: "New Laptop", target: 1500, saved: 900, deadline: "2025-12-01" }
+    ];
 
     function renderGoalPanels() {
       const container = document.getElementById("goalPanels");
@@ -157,8 +154,7 @@
       }
     });
 
-    renderGoalPanels(); // Initial rendering
-</script>
+    renderGoalPanels();
+  </script>
 </body>
 </html>
-

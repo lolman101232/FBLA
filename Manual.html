@@ -7,28 +7,35 @@
   <link rel="stylesheet" href="manual.css">
   <style>
     /* Basic styling for tab buttons */
-
+    .navigationButtons {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
     .tab-buttons {
       display: flex;
       margin-bottom: 1rem;
-      border-bottom: 2px solid #79c456;
+      border-bottom: 2px solid #5d80ff;
     }
     .tab-buttons button {
-      background-color: #f0f0f0; /* Default background color for both buttons */
-      color: #333; /* Default text color */
+      background-color: #f0f0f0;
+      color: #333;
       border: none;
       padding: 10px 20px;
       cursor: pointer;
       margin-right: 10px;
+      width: auto; /* Prevents full-width stretching */
+      min-width: 12px; /* Ensures a minimum button width */
+      max-width: 200px; /* Prevents it from taking full width */
+      text-align: center; /* Keeps text centered */
     }
-
     .tab-buttons button.active {
-      background-color: #79c456; /* Color for the active button */
+      background-color: #3d52a0; /* Color for the active button */
       color: white; /* Text color for the active button */
     }
 
     .tab-buttons button:hover {
-      background-color: #c3ffb6; /* Color when hovering over the button */
+      background-color: 	#5d80ff; /* Color when hovering over the button */
     }
 
     .tab-content {
@@ -37,12 +44,40 @@
     .tab-content.active {
       display: block;
     }
+    .navigationButtons {
+      display: flex;
+      justify-content: space-between;
+      position: fixed;
+      top: 45px;
+      left: 70px;
+      right: 70px;
+      width: auto; /* Prevents full-width stretching */
+      }
+
+    .navigationButtons button {
+        padding: 6px 12px; /* Regular button size */
+        font-size: 14px;
+        border: none;
+        border-radius: 4px;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+        max-width: 80px;
+    }
+
+    .navigationButtons button:hover {
+        background-color: #0056b3;
+    }
   </style>
 </head>
 <body>
   <h2>Manual Transaction Entry</h2>
   
   <!-- Tab Navigation -->
+  <div class="navigationButtons">
+    <button onclick="window.location.href='transaction.html'">Back</button>
+</div>
+
   <div class="tab-buttons">
     <button id="addTabBtn" class="active">Transaction Details</button>
     <button id="editTabBtn">Search Transaction</button>
@@ -93,7 +128,8 @@
       <label for="pinAdd">Security PIN:</label>
       <input type="password" id="pinAdd" name="pinAdd" required>
 
-      <button type="submit" id="submitTransactionBtn">Submit Transaction</button>
+      <button type="submit" id="submitTransactionBtn">Save Transaction</button>
+      <button type="button" id="delete">Delete</button>
     </form>
   </div>
 
@@ -107,6 +143,8 @@
       <input type="password" id="pinEdit" name="pinEdit" required>
       
       <button type="button" id="loadTransactionBtn">Load Transaction</button>
+      <p>Searched transaction will show up in Transaction Details </p>
+
     </form>
   </div>
 
@@ -136,15 +174,10 @@
       return pin === "1234";
     }
 
-    document.getElementById("addTransactionForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      
-      const date = document.getElementById("date").value;
-      const transactionType = document.getElementById("transactionType").value;
-      const amount = parseFloat(document.getElementById("amount").value);
-      const category = document.getElementById("category").value;
-      const pin = document.getElementById("pinAdd").value.trim();
 
+    document.getElementById("delete").addEventListener("click", async () => {
+      const pin = document.getElementById("pinAdd").value.trim();
+      
       if (!isPinValid(pin)) {
         alert("Incorrect PIN ❌");
         return;
@@ -152,144 +185,186 @@
 
       const user = auth.currentUser;
       if (!user) {
-        alert("You must be logged in to save transactions.");
+        alert("You must be logged in to delete transactions.");
         return;
       }
 
       const userId = user.uid;
-      const oneTimeCategoryDropdown = document.getElementById("oneTimeCategory"); // Use the correct ID
-      let oneTimeCategory = "Not Applicable"; // Default to Not Applicable
-      if (category === "one-time" || category === "subscription") {
-        oneTimeCategory = oneTimeCategoryDropdown.value !== "blank" ? oneTimeCategoryDropdown.value : "Not Provided";
-      } else if (category === "subscription") {
-        oneTimeCategory = "Not Provided";
-      };
-      const transactionData = {
-        date,
-        transactionType,
-        amount,
-        category,
-        oneTimeCategory: (category === "one-time" || category === "subscription") ? oneTimeCategory : "Not Applicable",
-      };
+      const transactionId = document.getElementById("submitTransactionBtn").dataset.transactionId;
+
+      if (!transactionId) {
+        alert("No transaction selected for deletion.");
+        return;
+      }
 
       try {
-        if (editTransactionKey) {
-          const transactionRef = ref(db, `users/${userId}/transactions-manual/${editTransactionKey}`);
-          await update(transactionRef, transactionData);
-          alert("Transaction updated successfully ✅");
-          editTransactionKey = null;
-        } else {
-          const transactionsRef = ref(db, `users/${userId}/transactions-manual`);
-          await set(push(transactionsRef), transactionData);
-          alert("Transaction saved successfully ✅");
-        }
+        const transactionRef = ref(db, `users/${userId}/transactions-manual/${transactionId}`);
+        await set(transactionRef, null);
+        alert("Transaction deleted successfully ✅");
 
         document.getElementById("addTransactionForm").reset();
         document.getElementById("oneTimeDetails").style.display = "none";
       } catch (error) {
-        console.error("Error saving transaction:", error);
-        alert("Failed to save transaction ❌");
+        console.error("Error deleting transaction:", error);
+        alert("Failed to delete transaction ❌");
       }
     });
+  document.getElementById("loadTransactionBtn").addEventListener("click", async () => {
+    const editDate = document.getElementById("editDate").value;
+    const pinEdit = document.getElementById("pinEdit").value.trim();
 
-    document.getElementById("loadTransactionBtn").addEventListener("click", async () => {
-      const editDate = document.getElementById("editDate").value;
-      const pinEdit = document.getElementById("pinEdit").value.trim();
+    if (!editDate) {
+      alert("Please select a date to edit.");
+      return;
+    }
 
-      if (!editDate) {
-        alert("Please select a date to edit.");
+    if (!isPinValid(pinEdit)) {
+      alert("Incorrect PIN ❌");
+      return;
+    }
+
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        alert("You must be logged in to edit transactions.");
+        window.location.href = "login.html";
         return;
       }
 
-      if (!isPinValid(pinEdit)) {
-        alert("Incorrect PIN ❌");
-        return;
-      }
+      const userId = user.uid;
+      const transactionsRef = ref(db, `users/${userId}/transactions-manual`);
+      const snapshot = await get(transactionsRef);
 
-      try {
-        const user = auth.currentUser;
-        if (!user) {
-          alert("You must be logged in to edit transactions.");
-          window.location.href = "login.html";
+      if (snapshot.exists()) {
+        let transactions = [];
+        snapshot.forEach((childSnapshot) => {
+          const transaction = { id: childSnapshot.key, ...childSnapshot.val() };
+          if (transaction.date === editDate) {
+            transactions.push(transaction);
+          }
+        });
+
+        if (transactions.length === 0) {
+          alert("No transactions found for the selected date.");
           return;
         }
 
-        const userId = user.uid;
-        const transactionsRef = ref(db, `users/${userId}/transactions-manual`);
-        const snapshot = await get(transactionsRef);
-
-        if (snapshot.exists()) {
-          let transactions = [];
-          snapshot.forEach((childSnapshot) => {
-            const transaction = { id: childSnapshot.key, ...childSnapshot.val() };
-            if (transaction.date === editDate) {
-              transactions.push(transaction);
-            }
-          });
-
-          if (transactions.length === 0) {
-            alert("No transactions found for the selected date.");
-            return;
-          }
-
-          // Create a dropdown to select the transaction
-          let transactionDropdown = document.getElementById("transactionSelect");
-          if (!transactionDropdown) {
-            transactionDropdown = document.createElement("select");
-            transactionDropdown.id = "transactionSelect";
-            document.getElementById("editTransactionForm").appendChild(transactionDropdown);
-          }
-
-          transactionDropdown.innerHTML = ""; // Clear previous options
-          transactions.forEach((transaction, index) => {
-            const option = document.createElement("option");
-            option.value = transaction.id;
-            option.textContent = `Transaction ${index + 1}: $${transaction.amount} (${transaction.category})`;
-            transactionDropdown.appendChild(option);
-          });
-
-          // Automatically load the first transaction into the form
-          loadTransactionIntoForm(transactions[0]);
-
-          // Listen for changes in the dropdown to update the form fields
-          transactionDropdown.addEventListener("change", function () {
-            const selectedTransaction = transactions.find(t => t.id === this.value);
-            if (selectedTransaction) {
-              loadTransactionIntoForm(selectedTransaction);
-            }
-          });
-
-        } else {
-          alert("No transactions available.");
+        // Create a dropdown to select the transaction
+        let transactionDropdown = document.getElementById("transactionSelect");
+        if (!transactionDropdown) {
+          transactionDropdown = document.createElement("select");
+          transactionDropdown.id = "transactionSelect";
+          document.getElementById("editTransactionForm").appendChild(transactionDropdown);
         }
-      } catch (error) {
-        console.error("Error fetching transactions:", error);
-        alert("Failed to load transaction ❌");
-      }
-    });
 
-    // Function to load a transaction into the form
-    function loadTransactionIntoForm(transaction) {
-      document.getElementById("amount").value = transaction.amount;
-      document.getElementById("transactionType").value = transaction.transactionType;
-      document.getElementById("category").value = transaction.category;
-      if (transaction.category === "one-time" || transaction.category === "subscription") {
-        document.getElementById("oneTimeDetails").style.display = "block";
-        document.getElementById("oneTimeCategory").value = transaction.oneTimeCategory || "Not Provided";
+        transactionDropdown.innerHTML = ""; // Clear previous options
+        transactions.forEach((transaction, index) => {
+          const option = document.createElement("option");
+          option.value = transaction.id;
+          option.textContent = `Transaction ${index + 1}: $${transaction.amount} (${transaction.category})`;
+          transactionDropdown.appendChild(option);
+        });
+
+        // Automatically load the first transaction into the form
+        loadTransactionIntoForm(transactions[0]);
+
+        // Listen for changes in the dropdown to update the form fields
+        transactionDropdown.addEventListener("change", function () {
+          const selectedTransaction = transactions.find(t => t.id === this.value);
+          if (selectedTransaction) {
+            loadTransactionIntoForm(selectedTransaction);
+          }
+        });
+
       } else {
-        document.getElementById("oneTimeDetails").style.display = "none";
+        alert("No transactions available.");
       }
-      document.getElementById("submitTransactionBtn").dataset.transactionId = transaction.id; // Store the transaction ID for updates
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
+      alert("Failed to load transaction ❌");
     }
-
-    document.getElementById("category").addEventListener("change", function() {
-    if (this.value === "one-time" || this.value === "subscription") {
+  });
+    // Function to load a transaction into the form
+  function loadTransactionIntoForm(transaction) {
+    document.getElementById("amount").value = transaction.amount;
+    document.getElementById("transactionType").value = transaction.transactionType;
+    document.getElementById("category").value = transaction.category;
+    if (transaction.category === "one-time" || transaction.category === "subscription") {
       document.getElementById("oneTimeDetails").style.display = "block";
+      document.getElementById("oneTimeCategory").value = transaction.oneTimeCategory || "Not Provided";
     } else {
       document.getElementById("oneTimeDetails").style.display = "none";
     }
-  });
+    document.getElementById("submitTransactionBtn").dataset.transactionId = transaction.id; // Store the transaction ID for updates
+  }
+  // Show/hide oneTimeCategory dropdown based on selected category during "add"
+  document.getElementById("category").addEventListener("change", function () {
+      const selectedCategory = this.value;
+      const oneTimeDetails = document.getElementById("oneTimeDetails");
 
+      if (selectedCategory === "one-time" || selectedCategory === "subscription") {
+          oneTimeDetails.style.display = "block";
+      } else {
+          oneTimeDetails.style.display = "none";
+      }
+  });
+  document.getElementById("addTransactionForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    
+    const date = document.getElementById("date").value;
+    const transactionType = document.getElementById("transactionType").value;
+    const amount = parseFloat(document.getElementById("amount").value);
+    const category = document.getElementById("category").value;
+    const pin = document.getElementById("pinAdd").value.trim();
+    const transactionId = document.getElementById("submitTransactionBtn").dataset.transactionId; // Get transaction ID from the button
+
+    if (!isPinValid(pin)) {
+      alert("Incorrect PIN ❌");
+      return;
+    }
+
+    const user = auth.currentUser;
+    if (!user) {
+      alert("You must be logged in to save transactions.");
+      return;
+    }
+
+    const userId = user.uid;
+    const oneTimeCategoryDropdown = document.getElementById("oneTimeCategory");
+    let oneTimeCategory = "deposit"; 
+    if (category === "one-time" || category === "subscription") {
+      oneTimeCategory = oneTimeCategoryDropdown.value !== "blank" ? oneTimeCategoryDropdown.value : "Not Provided";
+    } else if (category === "subscription") {
+      oneTimeCategory = "Not Provided";
+    }
+
+    const transactionData = {
+      date,
+      transactionType,
+      amount,
+      category,
+      oneTimeCategory: (category === "one-time" || category === "subscription" || category === "deposit") ? oneTimeCategory : "Not Applicable",
+    };
+
+    try {
+      if (transactionId) { // If we are editing an existing transaction
+        const transactionRef = ref(db, `users/${userId}/transactions-manual/${transactionId}`);
+        await update(transactionRef, transactionData);
+        alert("Transaction updated successfully ✅");
+        document.getElementById("submitTransactionBtn").dataset.transactionId = ""; // Clear the transaction ID after update
+      } else { // If it's a new transaction
+        const transactionsRef = ref(db, `users/${userId}/transactions-manual`);
+        await set(push(transactionsRef), transactionData);
+        alert("Transaction saved successfully ✅");
+      }
+
+      document.getElementById("addTransactionForm").reset();
+      document.getElementById("oneTimeDetails").style.display = "none";
+    } catch (error) {
+      console.error("Error saving transaction:", error);
+      alert("Failed to save transaction ❌");
+    }
+  });
     document.getElementById("addTabBtn").addEventListener("click", () => {
       document.getElementById("addTransactionTab").classList.add("active");
       document.getElementById("editTransactionTab").classList.remove("active");

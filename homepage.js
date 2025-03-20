@@ -37,6 +37,9 @@ function setupCharts() {
 
             if (snapshot.exists()) {
                 const userData = snapshot.val();
+                updateBudgetStatusFromFirebase(userData, database, user.uid);  // Pass database to function
+                console.log('User data from database:', userData);
+
                 console.log('User data from database:', userData);
                 const userName = userData.full_name ? userData.full_name.split(" ")[0] : "User";
                 userNameElement.textContent = userName;
@@ -57,24 +60,69 @@ function setupCharts() {
 
                     // 🌟 Spending Over Time Chart
                     // 🌟 Spending Over Time Chart
-                    new Chart(spendingChartCanvas.getContext("2d"), {
+                    // Assume you already have this globally:
+                    const spendingChartCanvas = document.getElementById("spendingChart").getContext("2d");
+
+                    // Create chart instance globally so we can update it later
+                    let spendingChart = new Chart(spendingChartCanvas, {
                         type: "line",
                         data: {
-                            labels: data.spendingOverTime.map(([date]) => date),
+                            labels: [], // empty initially
                             datasets: [{
                                 label: "Spending",
-                                data: data.spendingOverTime.map(([, amount]) => amount),
-                                borderColor: "#7091E6", // Light purple color
-                                backgroundColor: "#EDE8F5", // Light purple with transparency for fill
-                                fill: true, // Set fill to true for a soft background color
+                                data: [],
+                                borderColor: "#7091E6",
+                                backgroundColor: "#EDE8F5",
+                                fill: true,
                             }],
                         },
+                    });
+
+                    // Filter + update function
+                    function updateSpendingChart(data, period) {
+                        const now = new Date();
+                        
+                        const filteredSpending = data.spendingOverTime.filter(([dateStr, amount]) => {
+                            const date = new Date(dateStr);
+                            date.setHours(0, 0, 0, 0);
+
+                            if (period === 'week') {
+                                const startOfWeek = new Date();
+                                startOfWeek.setDate(now.getDate() - now.getDay());
+                                startOfWeek.setHours(0, 0, 0, 0);
+                                return date >= startOfWeek;
+                            } else if (period === 'month') {
+                                const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+                                startOfMonth.setHours(0, 0, 0, 0);
+                                return date >= startOfMonth;
+                            } else if (period === 'year') {
+                                const startOfYear = new Date(now.getFullYear(), 0, 1);
+                                startOfYear.setHours(0, 0, 0, 0);
+                                return date >= startOfYear;
+                            }
+                            return true;
+                        });
+
+                        // Update the chart's data
+                        spendingChart.data.labels = filteredSpending.map(([date]) => date);
+                        spendingChart.data.datasets[0].data = filteredSpending.map(([, amount]) => amount);
+
+                        spendingChart.update();
+                    }
+
+                    // Initial chart render
+                    updateSpendingChart(data, "month"); // or default to whatever period you like
+
+                    // Dropdown listener
+                    document.getElementById('summaryPeriod').addEventListener('change', function() {
+                        const selectedPeriod = this.value;
+                        updateSpendingChart(data, selectedPeriod);
                     });
                     // 🌟 Category Breakdown Chart
                     new Chart(categoriesChartCanvas.getContext("2d"), {
                         type: "pie",
                         data: {
-                            labels: Object.keys(data.categoryBreakdown),
+                            labels: Object.keys(data.categoryBreakdown).map(label => label.toUpperCase()),
                             datasets: [{
                                 data: Object.values(data.categoryBreakdown),
                                 backgroundColor: [
@@ -229,16 +277,7 @@ function renderProfitLossChart(profit, loss) {
     });
 }
 
-function resetCanvas(canvasId) {
-    const canvas = document.getElementById(canvasId);
-    if (canvas) {
-        const parent = canvas.parentNode;
-        parent.removeChild(canvas);
-        const newCanvas = document.createElement("canvas");
-        newCanvas.id = canvasId;
-        parent.appendChild(newCanvas);
-    }
-}
+
 // Function to check reviews
 function checkReviews() {
     const reviewContainer = document.getElementById("reviewContainer");
@@ -325,6 +364,9 @@ function updateReviewChecklist() {
                 }
                 if (item.oneTimeCategory === "personal") {
                     checkboxLabel.textContent = item.oneTimeCategory.toUpperCase() + " 🧴";
+                }
+                if (item.oneTimeCategory === "grocery") {
+                    checkboxLabel.textContent = item.oneTimeCategory.toUpperCase() + " 🛒";
                 }
                 const checkboxDescription = document.createElement("div");
                 checkboxDescription.classList.add("checkbox-description", "text-sm", "text-gray-500");
@@ -455,15 +497,27 @@ function fetchAndClusterTransactions() {
         const clusters = kmeans(dataPoints, 3);
         console.log("K-Means Clustering Result:", clusters);
 
-        // ✅ Prepare data for Chart.js
-        const datasets = clusters.centroids.map((centroid, index) => {
+        // ✅ Prepare data for Chart.js with custom labels
+        // Sort centroids based on their x (amount) value
+        const sortedCentroids = clusters.centroids
+            .map((centroid, index) => ({ centroid, index }))
+            .sort((a, b) => a.centroid[0] - b.centroid[0]); // sort by amount
+
+        const labels = 
+        ["Low Spending", 
+        "Medium Spending",
+         "High Spending"];
+
+
+
+        const datasets = sortedCentroids.map((c, sortedIndex) => {
             return {
-                label: `Cluster ${index + 1}`,
+                label: labels[sortedIndex],
                 data: clusters.clusters
-                    .map((cluster, i) => (cluster === index ? { x: dataPoints[i][0], y: dataPoints[i][1] } : null))
+                    .map((cluster, i) => (cluster === c.index ? { x: dataPoints[i][0], y: dataPoints[i][1] } : null))
                     .filter((point) => point !== null),
-                backgroundColor: ["rgba(255, 99, 132, 0.6)", "rgba(54, 162, 235, 0.6)", "rgba(75, 192, 192, 0.6)"][index],
-                borderColor: ["rgba(255, 99, 132, 1)", "rgba(54, 162, 235, 1)", "rgba(75, 192, 192, 1)"][index],
+                backgroundColor: ["rgba(255, 99, 132, 0.6)", "rgba(54, 162, 235, 0.6)", "rgba(75, 192, 192, 0.6)"][sortedIndex],
+                borderColor: ["rgba(255, 99, 132, 1)", "rgba(54, 162, 235, 1)", "rgba(75, 192, 192, 1)"][sortedIndex],
                 borderWidth: 1,
             };
         });
@@ -473,6 +527,7 @@ function fetchAndClusterTransactions() {
         new Chart(ctx, {
             type: "scatter",
             data: { datasets },
+            labels: labels,
             options: {
                 responsive: true,
                 scales: {
@@ -486,7 +541,7 @@ function fetchAndClusterTransactions() {
                     },
                 },
                 plugins: {
-                    legend: { position: "top", display: true },
+                    legend: { position: "bottom", display: true },
                     tooltip: {
                         callbacks: {
                             label: (tooltipItem) => {
@@ -502,23 +557,76 @@ function fetchAndClusterTransactions() {
         });
     });
 }
-document.addEventListener("DOMContentLoaded", function () {
-    // Toggle chatbot visibility
-    function toggleChatbot() {
-        const chatbotContainer = document.getElementById('chatbotContainer');
-        if (chatbotContainer.style.display === 'none' || chatbotContainer.style.display === '') {
-            chatbotContainer.style.display = 'block';
-        } else {
-            chatbotContainer.style.display = 'none';
-        }
+    function calculateMonthlyIncome(income, payFrequency) {
+        const frequencyMap = {
+            weekly: 4,
+            biweekly: 2,
+            monthly: 1
+        };
+        return income * (frequencyMap[payFrequency] || 1);
+    }
+async function updateBudgetStatusFromFirebase(userData, database , userId) {
+    const { financialSetup } = userData;
+
+    if (!financialSetup) {
+        console.error("Missing financial setup data.");
+        return;
     }
 
-    // Attach event listener to the chatbot toggle button
-    const chatbotBtn = document.querySelector('.chatbot-btn');
-    if (chatbotBtn) {
-        chatbotBtn.addEventListener('click', toggleChatbot);
+    const { income, payFrequency, savingsGoals } = financialSetup;
+    const monthlyIncome = calculateMonthlyIncome(income, payFrequency);
+    const monthlySavingsGoal = parseFloat(savingsGoals?.monthlySavings || 0);
+    const longTermGoal = parseFloat(savingsGoals?.longTerm || 0);
+    const totalSavingsGoal = monthlySavingsGoal + longTermGoal;
+
+
+
+    const transactionsRef = ref(database, `users/${userId}/transactions-manual`);
+    try {
+        const snapshot = await get(transactionsRef);
+        let monthlySpending = 0;
+        const currentMonth = new Date().getMonth() + 1;
+
+        if (snapshot.exists()) {
+            snapshot.forEach((child) => {
+                const tx = child.val();
+                const txDate = new Date(tx.date);
+                const txMonth = txDate.getMonth() + 1;
+
+                if (txMonth === currentMonth && tx.category !== "deposit") {
+                    monthlySpending += parseFloat(tx.amount || 0);
+                }
+            });
+        }
+
+        const difference = monthlyIncome - (monthlySpending + totalSavingsGoal);
+        const budgetText = document.querySelector("#budget");
+
+        if (!budgetText) {
+            console.error("Element with ID 'budget' not found.");
+            return;
+        }
+
+        if (difference > 0) {
+            budgetText.textContent = `$${difference.toFixed(2)} under budget goal`;
+            budgetText.style.color = "green";
+        } else if (difference < 0) {
+            budgetText.textContent = `$${Math.abs(difference).toFixed(2)} over budget goal`;
+            budgetText.style.color = "red";
+        } else {
+            budgetText.textContent = "On budget";
+            budgetText.style.color = "black";
+        }
+    } catch (error) {
+        console.error("Error fetching transactions from Firebase:", error);
     }
-});
+}
+const userId = auth.currentUser?.uid; // Assuming auth state is already handled
+
+
+
+
+
 // ✅ Call the function to fetch and cluster transaction data
 fetchAndClusterTransactions();
 setupCharts();

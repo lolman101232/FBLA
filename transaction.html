@@ -6,6 +6,35 @@
   <title>Transactions</title>
   <link rel="stylesheet" href="transaction.css"/>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+
+      function openPopup() {
+        const popup = document.getElementById("popup");
+        if (popup) {
+          popup.classList.remove("hidden");
+          popup.classList.add("flex"); // Ensure it's displayed
+        }
+      }
+
+      function closePopup() {
+        const popup = document.getElementById("popup");
+        if (popup) {
+          popup.classList.add("hidden");
+          popup.classList.remove("flex");
+        }
+      }
+
+      function toggleChatbot() {
+            const chatbotContainer = document.getElementById("chatbotContainer");
+            
+            if (chatbotContainer.style.display === "none" || chatbotContainer.style.display === "") {
+                chatbotContainer.style.display = "block"; // Show chatbot
+            } else {
+                chatbotContainer.style.display = "none"; // Hide chatbot
+            }
+        }
+
+  </script>
 </head>
 <body class="text-gray-900">
     <aside class="sidebar p-4 shadow mb-6">
@@ -14,6 +43,7 @@
       <li><a href="homepage.html" class="text-blue-600 hover:underline">Dashboard</a></li>
       <li><a href="transaction.html" class="text-blue-600 hover:underline">Transactions</a></li>
       <li><a href="investment.html" class="text-blue-600 hover:underline">Investments</a></li>
+      <li><a href="goals.html" class="text-blue-600 hover:underline">Goals</a></li>
       <li><a href="account.html" class="text-blue-600 hover:underline">Account</a></li>
     </ul>
     <button class="chatbot-btn" onclick="toggleChatbot()">💬</button>
@@ -45,7 +75,7 @@
         </div>
         <p class="text-gray-500 mt-2" id="summaryText">Your transaction overview for the selected period</p>
         <div class="grid gap-4 grid-cols-2 mt-4">
-          <div class="p-4 bg-[#cce0ff] rounded-lg">
+          <div class="p-4 bg-[#cce0ff] rounded-lg reflective">
             <div class="flex justify-between items-center">
               <h3 class="text-sm font-medium">Total Spent</h3>
               <span class="text-gray-400">💲</span>
@@ -53,7 +83,8 @@
             <p class="text-2xl font-bold mt-2" id="totalSpent">$0.00</p>
             <p class="text-xs text-gray-400">Based on selected period</p>
           </div>
-          <div class="p-4 bg-[#cce0ff] rounded-lg">
+          
+          <div class="p-4 bg-[#cce0ff] rounded-lg reflective">
             <div class="flex justify-between items-center">
               <h3 class="text-sm font-medium">Active Subscriptions</h3>
               <span class="text-gray-400">💳</span>
@@ -75,7 +106,23 @@
       
           <input type="text" id="transactionSearch" placeholder="Search by date (YYYY-MM-DD)" class="border border-gray-300 rounded w-64 py-2"/>
       
-          <button id="addTransactionButton" class="bg-[#3d52a0] text-white rounded px-4 py-2 hover:bg-[#7091e6]" onclick="openPopup()">+ Add Transaction</button>
+          <button id="addTransactionButton" class="bg-[#3d52a0] text-white rounded px-4 py-2 hover:bg-[#7091e6]" onclick="openPopup()">+ Add/Edit Transaction</button>
+          <!-- Add Transaction Popup -->
+          <div id="popup" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+            <div class="bg-white p-6 rounded-lg shadow-lg w-80 text-center">
+                <h2 class="text-xl font-bold mb-4">Choose Input Method</h2>
+                
+                <a href="scan.html" class="block bg-blue-600 text-white px-4 py-2 rounded mb-2 hover:bg-blue-700">
+                    Scan Receipt 📸
+                </a>
+                
+                <a href="manual.html" class="block bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">
+                    Enter Manually ✍️
+                </a>
+                
+                <button onclick="closePopup()" class="mt-4 text-gray-500 hover:text-gray-700">Cancel</button>
+            </div>
+          </div>
       </div>
         </div>
         <div class="bg-[#ede8f5] shadow rounded-lg overflow-x-auto">
@@ -90,134 +137,139 @@
                 <tbody class="text-gray-700 bg-[#FFFF]" id="transactionsTableBody"></tbody>
                 </table>
         </div>
-    <!-- JavaScript Section -->
-    <script>
-      // Set the current date next to the dropdown.
-      document.getElementById('currentDate').textContent =
-        new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+      import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+      import { getDatabase, ref, get, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
-      // Sample transactions data (replace with your actual data)
-      const transactions = [
-        { date: '2025-02-19', category: 'Subscription', amount: 29.99, type: 'subscription' },
-        { date: '2025-02-18', category: 'Groceries', amount: 55.00, type: 'one-time' },
-        { date: '2025-02-15', category: 'Entertainment', amount: 45.50, type: 'one-time' },
-        { date: '2025-02-14', category: 'Subscription', amount: 29.99, type: 'subscription' },
-        { date: '2025-01-25', category: 'Dining', amount: 70.00, type: 'one-time' },
-        { date: '2024-12-20', category: 'Subscription', amount: 29.99, type: 'subscription' },
-      ];
+      // ✅ Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyAUJPviTJaAcoMoP6wPn_LCUam7JoQROTY",
+        authDomain: "fbla-9824b.firebaseapp.com",
+        databaseURL: "https://fbla-9824b-default-rtdb.firebaseio.com",
+        projectId: "fbla-9824b",
+        storageBucket: "fbla-9824b.appspot.com",
+        messagingSenderId: "158608304412",
+        appId: "1:158608304412:web:4d47e398d859429ae472d9",
+        measurementId: "G-J87WWW4MQV"
+      };
 
-      // Filter transactions by the selected period using calendar boundaries.
-      function filterTransactionsByPeriod(period) {
-        const now = new Date();
-        if (period === 'week') {
-          // Determine the start of the current week (assuming Sunday as first day)
-          const dayOfWeek = now.getDay(); 
-          const startOfWeek = new Date(now);
-          startOfWeek.setHours(0, 0, 0, 0);
-          startOfWeek.setDate(now.getDate() - dayOfWeek);
-          const endOfWeek = new Date(startOfWeek);
-          endOfWeek.setDate(startOfWeek.getDate() + 7);
-          return transactions.filter(t => {
-            const tDate = new Date(t.date);
-            return tDate >= startOfWeek && tDate < endOfWeek;
-          });
-        } else if (period === 'month') {
-          // Start and end of the current month
-          const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-          const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-          return transactions.filter(t => {
-            const tDate = new Date(t.date);
-            return tDate >= startOfMonth && tDate < endOfMonth;
-          });
-        } else if (period === 'year') {
-          // Start and end of the current year
-          const startOfYear = new Date(now.getFullYear(), 0, 1);
-          const endOfYear = new Date(now.getFullYear() + 1, 0, 1);
-          return transactions.filter(t => {
-            const tDate = new Date(t.date);
-            return tDate >= startOfYear && tDate < endOfYear;
-          });
+      // ✅ Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getDatabase(app);
+
+      // ✅ Handle user authentication
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          const userId = user.uid; // ✅ Get authenticated user ID
+          fetchTransactions(userId); // ✅ Pass userId to the function
+        } else {
+          console.log("No user is signed in.");
+          window.location.href = "login.html"; // Redirect to login
         }
-        return transactions;
-      }
+      });
 
-      // Update the summary section based on the selected period.
-      function updateSummary() {
-        const period = document.getElementById('summaryPeriod').value;
-        const filtered = filterTransactionsByPeriod(period);
-        const total = filtered.reduce((sum, t) => sum + t.amount, 0);
-        const subscriptionsCount = filtered.filter(t => t.type === 'subscription').length;
-        document.getElementById('totalSpent').textContent = "$" + total.toFixed(2);
-        document.getElementById('activeSubscriptions').textContent = subscriptionsCount;
-        document.getElementById('summaryText').textContent = "Your transaction overview for the selected period";
-      }
+      let transactions = []; // Global variable to store transactions
 
-      // Update the transactions table based on type and search filters.
-      function updateTransactionsList() {
-        const typeFilter = document.getElementById('transactionType').value;
-        const searchText = document.getElementById('transactionSearch').value.trim();
-        
-        let filtered = transactions.filter(t => {
-          if (typeFilter === 'all') return true;
-          return t.type === typeFilter;
-        });
-        
-        if (searchText) {
-          filtered = filtered.filter(t => t.date.includes(searchText));
+// ✅ Fetch transactions from Firebase and store in `transactions`
+function fetchTransactions(userId) {
+    const transactionsRef = ref(db, `users/${userId}/transactions-manual`);
+
+    get(transactionsRef).then((snapshot) => {
+        transactions = []; // Reset global transactions array
+
+        if (snapshot.exists()) {
+            snapshot.forEach((childSnapshot) => {
+                transactions.push({ id: childSnapshot.key, ...childSnapshot.val() });
+            });
         }
-        
-        const tableBody = document.getElementById('transactionsTableBody');
-        tableBody.innerHTML = "";
-        filtered.forEach(t => {
-          const row = document.createElement('tr');
-          row.classList.add("border-b");
-          row.innerHTML = `
-            <td class="py-3 px-4">${t.date}</td>
-            <td class="py-3 px-4">${t.category}</td>
-            <td class="py-3 px-4">$${t.amount.toFixed(2)}</td>
-          `;
-          tableBody.appendChild(row);
-        });
-      }
 
-      // Popup functions (using your original code logic)
-      function openPopup(){
-        const popup = document.getElementById("popup");
-        popup.classList.add("open-popup");
-      }
-      function closePopup(){
-        const popup = document.getElementById("popup");
-        popup.classList.remove("open-popup");
-      }
-
-      // Event listeners
-      document.getElementById('summaryPeriod').addEventListener('change', () => {
+        console.log("Fetched Transactions:", transactions); // Debugging
         updateSummary();
         updateTransactionsList();
-      });
-      document.getElementById('transactionType').addEventListener('change', updateTransactionsList);
-      document.getElementById('transactionSearch').addEventListener('input', updateTransactionsList);
-      document.addEventListener("DOMContentLoaded", function () {
-      // Toggle chatbot visibility
-      function toggleChatbot() {
-          const chatbotContainer = document.getElementById('chatbotContainer');
-          if (chatbotContainer.style.display === 'none' || chatbotContainer.style.display === '') {
-              chatbotContainer.style.display = 'block';
-          } else {
-              chatbotContainer.style.display = 'none';
-          }
-      }
+    }).catch((error) => {
+        console.error("Error fetching transactions:", error);
+    });
+}
 
-      // Attach event listener to the chatbot toggle button
-      const chatbotBtn = document.querySelector('.chatbot-btn');
-      if (chatbotBtn) {
-          chatbotBtn.addEventListener('click', toggleChatbot);
-      }
-      });
-      // Initial rendering
-      updateSummary();
-      updateTransactionsList();
+    // ✅ Update transactions list based on filters
+    function updateTransactionsList() {
+        const tableBody = document.getElementById('transactionsTableBody');
+        const transactionType = document.getElementById('transactionType').value;
+        const searchQuery = document.getElementById('transactionSearch').value.trim();
+        
+        tableBody.innerHTML = ""; // Clear previous data
 
-  </script>
+        // Apply filters
+        let filteredTransactions = transactions.filter(t => {
+            let matchesType = transactionType === "all" || t.category === transactionType || t.oneTimeCategory === transactionType;
+            let matchesSearch = !searchQuery || t.date.includes(searchQuery);
+            return matchesType && matchesSearch;
+        });
+
+        // Display filtered transactions
+        filteredTransactions.forEach(t => {
+            const row = document.createElement('tr');
+            let categoryDisplay = t.oneTimeCategory || t.category;
+    
+            // If the transaction is a deposit, set a specific category
+            if (t.type === "deposit") {
+                categoryDisplay = "deposit"; // Customize this label if needed
+            }
+
+            row.innerHTML = `
+                <td class="py-3 px-4">${t.date}</td>
+                <td class="py-3 px-4">${(t.oneTimeCategory || t.category).toUpperCase()}</td>
+                <td class="py-3 px-4">$${parseFloat(t.amount).toFixed(2)}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    // ✅ Update summary section based on filters
+    function updateSummary() {
+        const period = document.getElementById('summaryPeriod').value;
+        const now = new Date();
+
+        // ✅ Filter transactions based on selected period
+        let filteredTransactions = transactions.filter(t => {
+            const tDate = new Date(t.date);
+            // Set tDate to midnight (start of the day) to avoid time comparison issues
+            tDate.setHours(0, 0, 0, 0);
+
+            if (period === 'week') {
+                const startOfWeek = new Date();
+                startOfWeek.setDate(now.getDate() - now.getDay()); // Start of the current week
+                startOfWeek.setHours(0, 0, 0, 0); // Set to midnight for consistent comparison
+                return tDate >= startOfWeek;
+            } else if (period === 'month') {
+                const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+                startOfMonth.setHours(0, 0, 0, 0); // Set to midnight for consistent comparison
+                return tDate >= startOfMonth;
+                console.log("Transaction Date:", tDate, "Start of Month:", startOfMonth);
+
+            } else if (period === 'year') {
+                const startOfYear = new Date(now.getFullYear(), 0, 1);
+                startOfYear.setHours(0, 0, 0, 0); // Set to midnight for consistent comparison
+                return tDate >= startOfYear;
+            }
+            return true;
+        });
+
+        // ✅ Update total spent & subscriptions
+        const totalSpent = filteredTransactions.reduce((sum, t) => sum + parseFloat(t.amount), 0);
+        const subscriptionsCount = filteredTransactions.filter(t => t.category === "subscription").length;
+
+        // ✅ Update UI
+        document.getElementById('totalSpent').textContent = "$" + totalSpent.toFixed(2);
+        document.getElementById('activeSubscriptions').textContent = subscriptionsCount;
+    }
+
+    // ✅ Add event listeners for filters
+    document.getElementById('transactionType').addEventListener('change', updateTransactionsList);
+    document.getElementById('transactionSearch').addEventListener('input', updateTransactionsList);
+    document.getElementById('summaryPeriod').addEventListener('change', updateSummary);
+    </script>
 </body>
 </html>

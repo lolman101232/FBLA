@@ -1,11 +1,21 @@
-/* Basic Reset */
+/* General Reset and Setup */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "Poppins", sans-serif;
+
+    @font-face {
+        font-family: 'Montserrat';
+        src: url('https://fonts.gstatic.com/s/montserrat/v15/JTUSjIg1_i6t8kFC3yG5sZs7zRsaRzYa9wXo8qd0DgQ.woff2') format('woff2'),
+             url('https://fonts.gstatic.com/s/montserrat/v15/JTUSjIg1_i6t8kFC3yG5sZs7zRsaRzYa9wXo8q3qvgw.woff') format('woff');
+        font-weight: 400;
+        font-style: normal;
+    }
 }
 
+body {
+    font-family: 'Montserrat', sans-serif;
+}
 /* Body Styles */
 body {
     display: flex;
@@ -78,14 +88,16 @@ body {
     padding: 70px;
 }
 
-/* Panel Styles */
 .panel {
     background: rgb(255, 250, 254);
     border: 1px solid hsl(var(--border));
-    position: relative ;
-    border-radius: 12px; /* Apply rounded corners here */
-    padding: 40px;
+    border-radius: 12px;
+    padding: 20px; /* reduce from 40px */
     box-shadow: 0 6px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    max-height: 500px;
 }
 
 .panel h2 {
@@ -205,7 +217,7 @@ div {
     position: relative; /* Ensure the parent div allows absolute positioning */
 }
 #markAsFinished {
-    position: absolute;
+    position: relative;
     bottom: 10px;  /* Pushes button to the bottom */
     right: 10px;   /* Pushes button to the right */
     padding: 8px 12px;
@@ -221,9 +233,14 @@ div {
 .checkbox-container {
     display: flex;
     align-items: flex-start; /* Aligns the checkbox and text */
-    gap: 10px; /* Space between checkbox and text */
+    gap: 15px; /* Space between checkbox and text */
     margin-bottom: 12px;
     color: #374151;
+}
+.checkbox-group {
+    overflow-y: auto;
+    flex: 1; /* take remaining space inside .panel */
+    padding-right: 8px; /* so the scrollbar doesn't overlap content */
 }
 
 .review-content {
@@ -232,7 +249,7 @@ div {
 }
 
 .checkbox-label {
-    font-size: 0.875rem; /* text-sm */
+    font-size: 0.775rem; /* text-sm */
     font-weight: 600; /* font-medium */
     color: #374151; /* Tailwind's text-gray-700 */
 }
@@ -297,19 +314,17 @@ div {
     border-radius: 10px;
     z-index: 1000;
     padding: 10px;
+    flex-direction: column; margin: auto; border: 1px solid #ccc; border-radius: 10px; 
+    overflow: hidden;
 }
 
-.chatbot-header {
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 10px;
-    color: #6A0DAD;
-}
+
 
 .close-chatbot {
     cursor: pointer;
     background: none;
     border: none;
+    display: hidden;
     font-size: 18px;
     position: absolute;
     top: 5px;
@@ -340,3 +355,45 @@ body::before {
 }
 
 
+.dropdown-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* matches your card spacing */
+    margin-bottom: 0.5rem;
+}
+
+.dropdown-container label {
+    font-size: 0.875rem; /* text-sm */
+    font-weight: 600;    /* semi-bold */
+    color: #374151;      /* gray-700 */
+}
+
+.summary-dropdown {
+    background-color: #ffffff;
+    border: 1px solid #d1d5db; /* gray-300 */
+    color: #374151;            /* gray-700 */
+    font-size: 0.875rem;
+    border-radius: 0.5rem;     /* rounded-lg */
+    padding: 0.25rem 0.5rem;   /* py-1 px-2 */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); /* subtle shadow */
+    transition: all 0.2s ease;
+}
+
+.summary-dropdown:focus {
+    outline: none;
+    border-color: #7091E6; /* your theme color */
+    box-shadow: 0 0 0 2px rgba(112, 145, 230, 0.3);
+}
+
+.checkbox-group::-webkit-scrollbar {
+    width: 8px;
+}
+
+.checkbox-group::-webkit-scrollbar-thumb {
+    background-color: rgba(100, 116, 139, 0.5); /* slate-500 */
+    border-radius: 8px;
+}
+
+.checkbox-group::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(100, 116, 139, 0.8);
+}

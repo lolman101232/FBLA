@@ -3,7 +3,14 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "Poppins", sans-serif;
+
+    @font-face {
+        font-family: 'Montserrat';
+        src: url('https://fonts.gstatic.com/s/montserrat/v15/JTUSjIg1_i6t8kDC3RZVzPpRxC7m0dR9pBOi.woff2') format('woff2'),
+             url('https://fonts.gstatic.com/s/montserrat/v15/JTUSjIg1_i6t8kDC3RZVzPpRxC7m0dR9pBOj.woff') format('woff');
+        font-weight: 100;
+        font-style: thin;
+    }
 }
 
 body {
@@ -15,6 +22,8 @@ body {
     background: url('growth-economy-with-coins-concept.jpg') center center / cover no-repeat;
     position: relative;
     background-color: #ede8f5; /* Light metallic chic background */
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 100; /* Super thin */
 }
 
 /* Wrapper styles */
@@ -204,3 +213,5 @@ body::before {
     margin-top: 20px;
     font-weight: bold;
 }
+
+
