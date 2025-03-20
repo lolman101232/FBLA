@@ -58,6 +58,20 @@ This project is a comprehensive personal finance management application designed
   - Real-time stock data is fetched using the Twelve Data API (or Alpha Vantage API if configured).
   - Documentation: [Twelve Data API Docs](https://twelvedata.com/docs) | [Alpha Vantage API Docs](https://www.alphavantage.co/documentation/)
 
+- **Langchain and Ollama for the AI**
+  - Accessing the AI model is done through Ollama
+  - Used Langchain to feed the model data
+  - Documentation: Ollama (https://ollama.com/) Langchain (https://www.langchain.com/)
+
+- **Tesseract**
+  - Use tesseract to extract text from a webcam picture
+  - Documentation: (https://github.com/tesseract-ocr/tesseract)
+
+- **Flask**
+  - Use Flask to connect python code to Javascript and then HTML
+  - Sets up an API that can be called by Javascript to gather and return strings
+  - Documentation: (https://flask.palletsprojects.com/)
+
 Any open-source libraries used are referenced above, and all source code is original or adapted from standard templates with proper attribution where necessary.
 
 ---
@@ -74,4 +88,4 @@ This project is licensed under the MIT License. Please refer to the LICENSE file
 - **Templates & Libraries:** Detailed references are provided above to ensure proper attribution and adherence to open-source licensing requirements.
 - **Competitive Event Requirements:** This README, along with the source code and additional documentation, meets the FBLA Coding & Programming competitive event guidelines. The documentation covers all required aspects including functionality, user experience, code quality, and data management.
 
-For further information, please refer to the accompanying documentation in the repository or contact [Your Name] at [pranav.bhumana8@gmail.com].
+For further information, please refer to the accompanying documentation in the repository or contact [Pranav Bhumana] at [pranav.bhumana8@gmail.com].
